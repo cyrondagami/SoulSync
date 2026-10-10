@@ -13,7 +13,6 @@ import {
     Users,
     Clock3,
     Bookmark,
-    ChevronRight,
     Target,
     HandHeart,
     Flame,
@@ -59,72 +58,6 @@ export default function Dashboard() {
     });
 
     const firstName = user.name.split(' ')[0];
-
-    const stats = [
-        {
-            label: 'Upcoming Events',
-            value: '6',
-            description: 'This month',
-            icon: CalendarDays,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-        },
-        {
-            label: 'Announcements',
-            value: '5',
-            description: 'Latest updates',
-            icon: Megaphone,
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-        },
-        {
-            label: 'Prayer Requests',
-            value: '12',
-            description: 'Community prayers',
-            icon: Heart,
-            color: 'text-red-600',
-            bg: 'bg-red-50',
-        },
-        {
-            label: 'Music Classes',
-            value: '4',
-            description: 'Available classes',
-            icon: Music,
-            color: 'text-yellow-600',
-            bg: 'bg-yellow-50',
-        },
-    ];
-
-    const quickAccess = [
-        {
-            title: 'Events',
-            description: 'Join upcoming gatherings and activities.',
-            icon: CalendarDays,
-            route: 'events',
-            gradient: 'from-green-500 to-green-600',
-        },
-        {
-            title: 'Announcements',
-            description: 'Stay updated with ministry news.',
-            icon: Megaphone,
-            route: 'announcements',
-            gradient: 'from-green-500 to-red-600',
-        },
-        {
-            title: 'Prayer Requests',
-            description: 'Pray, encourage, and support others.',
-            icon: Heart,
-            route: 'prayer.requests',
-            gradient: 'from-red-500 to-red-600',
-        },
-        {
-            title: 'Music Classes',
-            description: 'Develop your musical gifts and skills.',
-            icon: Music,
-            route: 'music.classes',
-            gradient: 'from-yellow-400 to-green-600',
-        },
-    ];
 
     const journey = [
         {
@@ -221,7 +154,7 @@ export default function Dashboard() {
                             {/* Heading */}
                             <div className="mt-7 max-w-3xl">
                                 {/* Welcome line (above the title) */}
-                                <p className="text-xl font-bold text-green-100 sm:text-2xl lg:text-3xl">
+                                <p className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">
                                     Welcome,{' '}
                                     <span className="text-white">
                                         {firstName}
@@ -232,13 +165,13 @@ export default function Dashboard() {
                                 {/* Main title */}
                                 <h1 className="mt-3 text-4xl font-black uppercase leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-7xl">
                                     Living
-                                    <span className="mt-2 block bg-gradient-to-r from-green-100 via-white to-red-200 bg-clip-text text-transparent">
+                                    <span className="mt-2 block text-white">
                                         Faith
                                     </span>
                                 </h1>
                             </div>
 
-                            <p className="mt-7 max-w-xl text-sm leading-7 text-green-100 sm:text-base lg:text-lg">
+                            <p className="mt-7 max-w-xl text-sm leading-7 text-white sm:text-base lg:text-lg">
                                 Your journey doesn't have to be walked alone.
                                 Connect with your community, grow in faith,
                                 discover your gifts, and serve with purpose.
@@ -249,7 +182,7 @@ export default function Dashboard() {
 
                                 <Link
                                     href={route('events')}
-                                    className="group inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-black text-green-700 shadow-2xl transition duration-300 hover:-translate-y-1 hover:shadow-white/20"
+                                    className="group inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-black text-black shadow-2xl transition duration-300 hover:-translate-y-1 hover:shadow-white/20"
                                 >
                                     Explore Events
 
@@ -273,7 +206,7 @@ export default function Dashboard() {
                                     (value) => (
                                         <div
                                             key={value}
-                                            className="flex items-center gap-2 text-xs font-semibold text-green-100"
+                                            className="flex items-center gap-2 text-xs font-semibold text-white"
                                         >
                                             <CheckCircle2 className="h-4 w-4 text-green-300" />
                                             {value}
@@ -294,7 +227,7 @@ export default function Dashboard() {
                                 <div className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-7 text-center shadow-2xl backdrop-blur-xl">
 
                                     {/* Top label */}
-                                    <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-green-200">
+                                    <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white">
                                         <Clock3 className="h-4 w-4" />
                                         Local Time
                                     </div>
@@ -304,7 +237,7 @@ export default function Dashboard() {
                                         {formattedTime}
                                     </p>
 
-                                    <p className="mt-3 text-sm font-medium leading-6 text-green-100">
+                                    <p className="mt-3 text-sm font-medium leading-6 text-white">
                                         {formattedDate}
                                     </p>
 
@@ -313,15 +246,15 @@ export default function Dashboard() {
                                     {/* Scripture-inspired quote */}
                                     <Quote className="mx-auto h-6 w-6 text-green-200/70" />
 
-                                    <p className="mt-3 text-sm font-medium italic leading-6 text-green-100">
+                                    <p className="mt-3 text-sm font-medium italic leading-6 text-white">
                                         "Walk by faith, not by sight."
                                     </p>
 
-                                    <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-yellow-300">
+                                    <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-white">
                                         2 Corinthians 5:7
                                     </p>
 
-                                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-green-200">
+                                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
                                         <Flame className="h-3.5 w-3.5" />
                                         Keep Growing
                                     </div>
@@ -337,124 +270,6 @@ export default function Dashboard() {
                 <div className="relative z-20 mx-auto -mt-10 max-w-7xl space-y-10 px-4 pb-14 sm:px-6 lg:px-8">
 
                     {/* =================================================
-                        STATS
-                    ================================================== */}
-                    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-                        {stats.map((stat) => {
-                            const Icon = stat.icon;
-
-                            return (
-                                <div
-                                    key={stat.label}
-                                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white p-5 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:border-green-200 hover:shadow-2xl"
-                                >
-
-                                    {/* Decorative background */}
-                                    <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-green-50 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-
-                                    <div className="relative">
-
-                                        <div className="flex items-center justify-between">
-
-                                            <div
-                                                className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} transition duration-300 group-hover:scale-110`}
-                                            >
-                                                <Icon
-                                                    className={`h-5 w-5 ${stat.color}`}
-                                                />
-                                            </div>
-
-                                            <ChevronRight className="h-4 w-4 text-green-300 transition group-hover:translate-x-1 group-hover:text-green-500" />
-                                        </div>
-
-                                        <p className="mt-5 text-3xl font-black text-green-950">
-                                            {stat.value}
-                                        </p>
-
-                                        <p className="mt-1 text-sm font-bold text-green-700">
-                                            {stat.label}
-                                        </p>
-
-                                        <p className="mt-1 text-xs text-green-400">
-                                            {stat.description}
-                                        </p>
-
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </section>
-
-                    {/* =================================================
-                        QUICK ACCESS
-                    ================================================== */}
-                    <section>
-
-                        <div className="mb-6">
-
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="h-4 w-4 text-green-300" />
-
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                    Explore SoulSync
-                                </p>
-                            </div>
-
-                            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-                                Everything You Need
-                            </h2>
-
-                            <p className="mt-2 text-sm text-green-200/80">
-                                Your central space for connection, growth,
-                                fellowship, and service.
-                            </p>
-                        </div>
-
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
-                            {quickAccess.map((item) => {
-                                const Icon = item.icon;
-
-                                return (
-                                    <Link
-                                        key={item.route}
-                                        href={route(item.route)}
-                                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white p-6 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:border-green-200 hover:shadow-2xl"
-                                    >
-
-                                        {/* Icon */}
-                                        <div
-                                            className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg transition duration-300 group-hover:scale-110 group-hover:rotate-3`}
-                                        >
-                                            <Icon className="h-6 w-6" />
-                                        </div>
-
-                                        <h3 className="relative z-10 mt-5 text-lg font-black text-green-950">
-                                            {item.title}
-                                        </h3>
-
-                                        <p className="relative z-10 mt-2 min-h-[48px] text-sm leading-6 text-green-500">
-                                            {item.description}
-                                        </p>
-
-                                        <div className="relative z-10 mt-5 flex items-center text-sm font-bold text-green-600">
-                                            Explore
-
-                                            <ArrowRight className="ml-1 h-4 w-4 transition duration-300 group-hover:translate-x-2" />
-                                        </div>
-
-                                        {/* Decorative circle */}
-                                        <div className="absolute -bottom-16 -right-16 h-36 w-36 rounded-full bg-green-50 transition duration-500 group-hover:scale-150" />
-
-                                    </Link>
-                                );
-                            })}
-
-                        </div>
-                    </section>
-
-                    {/* =================================================
                         FAITH SECTION
                     ================================================== */}
                     <section>
@@ -464,7 +279,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2">
                                 <BookOpen className="h-4 w-4 text-green-300" />
 
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-green-300">
+                                <p className="text-xs font-black uppercase tracking-[0.2em] text-white">
                                     Daily Inspiration
                                 </p>
                             </div>
@@ -473,7 +288,7 @@ export default function Dashboard() {
                                 Grow in Faith
                             </h2>
 
-                            <p className="mt-2 text-sm text-green-200/80">
+                            <p className="mt-2 text-sm text-white">
                                 Explore Scripture and stay connected with your
                                 ministry community.
                             </p>
@@ -502,11 +317,11 @@ export default function Dashboard() {
                                             </div>
 
                                             <div>
-                                                <h3 className="font-black text-green-950">
+                                                <h3 className="font-black text-black">
                                                     Upcoming Event
                                                 </h3>
 
-                                                <p className="text-xs text-green-400">
+                                                <p className="text-xs text-black">
                                                     Don't miss what's next
                                                 </p>
                                             </div>
@@ -515,7 +330,7 @@ export default function Dashboard() {
 
                                         <Link
                                             href={route('events')}
-                                            className="text-xs font-bold text-green-600 hover:text-green-700"
+                                            className="text-xs font-bold text-black hover:text-black/70"
                                         >
                                             View All
                                         </Link>
@@ -527,21 +342,21 @@ export default function Dashboard() {
                                         <div className="flex items-center gap-4">
 
                                             <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-white shadow-sm">
-                                                <span className="text-xl font-black text-green-600">
+                                                <span className="text-xl font-black text-black">
                                                     28
                                                 </span>
 
-                                                <span className="text-[9px] font-black text-green-400">
+                                                <span className="text-[9px] font-black text-black">
                                                     SEP
                                                 </span>
                                             </div>
 
                                             <div className="min-w-0 flex-1">
-                                                <h4 className="font-black text-green-950">
+                                                <h4 className="font-black text-black">
                                                     Youth Fellowship Night
                                                 </h4>
 
-                                                <div className="mt-2 flex flex-wrap gap-3 text-xs text-green-500">
+                                                <div className="mt-2 flex flex-wrap gap-3 text-xs text-black">
                                                     <span>6:00 PM</span>
                                                     <span>•</span>
                                                     <span>Youth Center</span>
@@ -566,11 +381,11 @@ export default function Dashboard() {
                                             </div>
 
                                             <div>
-                                                <h3 className="font-black text-green-950">
+                                                <h3 className="font-black text-black">
                                                     Latest Announcement
                                                 </h3>
 
-                                                <p className="text-xs text-green-400">
+                                                <p className="text-xs text-black">
                                                     Stay informed
                                                 </p>
                                             </div>
@@ -579,7 +394,7 @@ export default function Dashboard() {
 
                                         <Link
                                             href={route('announcements')}
-                                            className="text-xs font-bold text-green-600 hover:text-green-700"
+                                            className="text-xs font-bold text-black hover:text-black/70"
                                         >
                                             View All
                                         </Link>
@@ -596,15 +411,15 @@ export default function Dashboard() {
 
                                             <div>
 
-                                                <span className="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-green-600">
+                                                <span className="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-black">
                                                     New
                                                 </span>
 
-                                                <h4 className="mt-2 font-black text-green-950">
+                                                <h4 className="mt-2 font-black text-black">
                                                     Youth Fellowship Night
                                                 </h4>
 
-                                                <p className="mt-1 text-xs leading-5 text-green-500">
+                                                <p className="mt-1 text-xs leading-5 text-black">
                                                     Check out the latest youth
                                                     ministry updates and
                                                     activities.
@@ -622,40 +437,6 @@ export default function Dashboard() {
                     </section>
 
                     {/* =================================================
-                        VERSE BANNER
-                    ================================================== */}
-                    <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-green-800 via-green-700 to-red-700 p-8 text-white shadow-xl shadow-green-950/50 sm:p-10">
-
-                        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-
-                        <div className="absolute -bottom-32 left-1/3 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-
-                        <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-
-                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/15">
-                                <BookOpen className="h-8 w-8 text-white" />
-                            </div>
-
-                            <div className="flex-1">
-
-                                <p className="text-lg font-bold leading-8 sm:text-xl">
-                                    "Let all that you do be done in love."
-                                </p>
-
-                                <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-green-200">
-                                    1 Corinthians 16:14
-                                </p>
-
-                            </div>
-
-                            <div className="hidden rounded-full border border-white/20 bg-white/10 px-5 py-3 text-xs font-bold sm:block">
-                                Daily Reminder
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* =================================================
                         JOURNEY
                     ================================================== */}
                     <section className="overflow-hidden rounded-3xl border border-white/10 bg-white p-7 shadow-xl shadow-green-950/40 sm:p-8">
@@ -667,29 +448,29 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2">
                                     <Target className="h-5 w-5 text-green-600" />
 
-                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-green-600">
+                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-black">
                                         Your Journey
                                     </p>
                                 </div>
 
-                                <h2 className="mt-2 text-2xl font-black text-green-950">
+                                <h2 className="mt-2 text-2xl font-black text-black">
                                     Connect. Grow. Serve.
                                 </h2>
 
-                                <p className="mt-1 text-sm text-green-500">
+                                <p className="mt-1 text-sm text-black">
                                     Every step brings you closer to community
                                     and purpose.
                                 </p>
 
                             </div>
 
-                            <div className="rounded-2xl bg-gradient-to-br from-green-50 to-red-50 px-6 py-4 text-center">
+                            <div className="rounded-2xl bg-gradient-to-br from-green-50 to-yellow-50 px-6 py-4 text-center">
 
-                                <p className="text-[10px] font-black tracking-wider text-green-500">
+                                <p className="text-[10px] font-black tracking-wider text-black">
                                     OVERALL PROGRESS
                                 </p>
 
-                                <p className="mt-1 text-2xl font-black text-green-700">
+                                <p className="mt-1 text-2xl font-black text-black">
                                     65%
                                 </p>
 
@@ -714,27 +495,27 @@ export default function Dashboard() {
                                                 </div>
 
                                                 <div>
-                                                    <h3 className="font-bold text-green-800">
+                                                    <h3 className="font-bold text-black">
                                                         {item.title}
                                                     </h3>
 
-                                                    <p className="text-xs text-green-400">
+                                                    <p className="text-xs text-black">
                                                         {item.description}
                                                     </p>
                                                 </div>
 
                                             </div>
 
-                                            <span className="text-sm font-black text-green-600">
+                                            <span className="text-sm font-black text-black">
                                                 {item.progress}%
                                             </span>
 
                                         </div>
 
-                                        <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-green-50">
+                                        <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-green-100">
 
                                             <div
-                                                className="h-full rounded-full bg-gradient-to-r from-green-500 via-green-500 to-red-600 transition-all duration-1000"
+                                                className="h-full rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-1000"
                                                 style={{
                                                     width: `${item.progress}%`,
                                                 }}
@@ -775,7 +556,7 @@ export default function Dashboard() {
                                     Prayer Community
                                 </h2>
 
-                                <p className="mt-2 max-w-md text-sm leading-6 text-green-100">
+                                <p className="mt-2 max-w-md text-sm leading-6 text-white">
                                     Share your prayer requests and stand with
                                     others through prayer and encouragement.
                                 </p>
@@ -812,7 +593,7 @@ export default function Dashboard() {
                                     Develop Your Gifts
                                 </h2>
 
-                                <p className="mt-2 max-w-md text-sm leading-6 text-green-100">
+                                <p className="mt-2 max-w-md text-sm leading-6 text-white">
                                     Explore music classes and discover
                                     opportunities to develop your talents.
                                 </p>
@@ -849,7 +630,7 @@ export default function Dashboard() {
                                 Be Part of Something Meaningful
                             </h2>
 
-                            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-green-200">
+                            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white">
                                 Your presence, participation, and service can
                                 make a meaningful difference in the lives of
                                 others.

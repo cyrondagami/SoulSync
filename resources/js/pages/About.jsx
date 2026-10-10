@@ -1,4 +1,3 @@
-
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function About() {
+    /* Each value gets one of the four brand colors (green, yellow, red, white) */
     const values = [
         {
             icon: Heart,
@@ -23,13 +23,21 @@ export default function About() {
             description:
                 'Growing deeper in our relationship with God through prayer, worship, and His Word.',
             gradient: 'from-green-600 to-green-800',
+            text: 'text-white',
+            desc: 'text-green-50/90',
+            chip: 'bg-white/20 text-white',
+            mark: 'text-white/10',
         },
         {
             icon: Users,
             title: 'Fellowship',
             description:
                 'Building genuine friendships and a strong sense of community among the youth.',
-            gradient: 'from-green-500 to-green-700',
+            gradient: 'from-yellow-400 to-yellow-500',
+            text: 'text-green-950',
+            desc: 'text-green-950/80',
+            chip: 'bg-green-950/15 text-green-950',
+            mark: 'text-green-950/10',
         },
         {
             icon: HandHeart,
@@ -37,44 +45,60 @@ export default function About() {
             description:
                 'Serving the church and community with humility, compassion, and love.',
             gradient: 'from-red-600 to-red-800',
+            text: 'text-white',
+            desc: 'text-red-50/90',
+            chip: 'bg-white/20 text-white',
+            mark: 'text-white/10',
         },
         {
             icon: BookOpen,
             title: 'Growth',
             description:
                 'Encouraging every member to grow spiritually, mentally, socially, and personally.',
-            gradient: 'from-yellow-500 to-yellow-600',
+            gradient: 'from-white to-green-50',
+            text: 'text-green-950',
+            desc: 'text-green-900/75',
+            chip: 'bg-green-700 text-white',
+            mark: 'text-green-700/10',
         },
     ];
 
+    /* Each step links to a real feature so the journey is actionable. */
     const journey = [
         {
-            number: '01',
+            number: '1',
             title: 'Connect',
             description:
-                'Create meaningful relationships and build a welcoming community where every young person feels valued.',
+                'Meet people, build friendships, and find a community where every young person feels valued.',
             icon: Users,
+            route: 'events',
+            cta: 'Join an event',
         },
         {
-            number: '02',
+            number: '2',
             title: 'Grow',
             description:
-                'Develop faith, character, skills, leadership, and a deeper understanding of God’s purpose.',
+                'Develop your faith, character, and talents through learning and guided practice.',
             icon: Sparkles,
+            route: 'music.classes',
+            cta: 'Try a music class',
         },
         {
-            number: '03',
+            number: '3',
             title: 'Serve',
             description:
-                'Use our gifts and talents to serve the church, support others, and make a positive impact.',
+                'Use your gifts to support others, stand with them in prayer, and make a real impact.',
             icon: HandHeart,
+            route: 'prayer.requests',
+            cta: 'Join the prayer community',
         },
         {
-            number: '04',
+            number: '4',
             title: 'Lead',
             description:
-                'Prepare young people to become responsible, compassionate, and purpose-driven leaders.',
+                'Become a responsible, compassionate, and purpose-driven leader for the next generation.',
             icon: Target,
+            goal: true,
         },
     ];
 
@@ -83,22 +107,22 @@ export default function About() {
             value: '4',
             label: 'Core Values',
             icon: Sparkles,
-            bg: 'bg-yellow-50',
-            color: 'text-yellow-600',
+            iconBg: 'bg-yellow-400/20',
+            color: 'text-yellow-300',
         },
         {
             value: '6+',
             label: 'Youth Activities',
             icon: CalendarDays,
-            bg: 'bg-green-50',
-            color: 'text-green-700',
+            iconBg: 'bg-green-400/20',
+            color: 'text-green-300',
         },
         {
             value: '100%',
             label: 'Community Focus',
             icon: Users,
-            bg: 'bg-red-50',
-            color: 'text-red-700',
+            iconBg: 'bg-red-400/20',
+            color: 'text-red-300',
         },
     ];
 
@@ -151,10 +175,7 @@ export default function About() {
                     {/* Yellow Glow */}
                     <div className="pointer-events-none absolute right-[20%] top-[15%] h-32 w-32 rounded-full bg-yellow-400/15 blur-2xl" />
 
-                    {/* ==================================================
-                        LARGE SOULSYNC LOGO WATERMARK
-                    ================================================== */}
-
+                    {/* LARGE SOULSYNC LOGO WATERMARK */}
                     <img
                         src="/images/logo.png"
                         alt=""
@@ -171,10 +192,7 @@ export default function About() {
 
                     <div className="absolute right-[12%] top-[20%] h-1.5 w-1.5 animate-pulse rounded-full bg-yellow-200/70" />
 
-                    {/* ==================================================
-                        HERO CONTENT
-                    ================================================== */}
-
+                    {/* HERO CONTENT */}
                     <div className="relative z-10 mx-auto max-w-7xl px-4 pb-36 pt-20 text-white sm:px-6 lg:px-8 lg:pb-40 lg:pt-24">
 
                         <div className="max-w-4xl">
@@ -263,13 +281,13 @@ export default function About() {
                     MAIN CONTENT
                 ================================================== */}
 
-                <main className="relative z-20 mx-auto max-w-7xl space-y-10 px-4 pb-14 pt-10 sm:px-6 lg:px-8">
+                <main className="relative z-20 mx-auto max-w-7xl space-y-16 px-4 pb-14 pt-10 sm:px-6 lg:px-8">
 
                     {/* ==================================================
-                        STATS
+                        STATS — one glass strip instead of 3 white boxes
                     ================================================== */}
 
-                    <section className="relative z-20 -mt-24 grid gap-4 sm:grid-cols-3">
+                    <section className="relative z-20 -mt-24 grid overflow-hidden rounded-3xl border border-white/15 bg-green-950/70 shadow-2xl shadow-black/30 backdrop-blur-xl sm:grid-cols-3 sm:divide-x sm:divide-white/10">
 
                         {impact.map((item) => {
                             const Icon = item.icon;
@@ -277,28 +295,26 @@ export default function About() {
                             return (
                                 <div
                                     key={item.label}
-                                    className="group rounded-2xl border border-white/10 bg-white p-6 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:border-green-200 hover:shadow-2xl"
+                                    className="flex items-center gap-4 border-b border-white/10 p-6 last:border-b-0 sm:border-b-0 sm:p-7"
                                 >
 
-                                    <div className="flex items-center justify-between">
-
-                                        <div
-                                            className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.bg} transition group-hover:scale-110`}
-                                        >
-                                            <Icon
-                                                className={`h-5 w-5 ${item.color}`}
-                                            />
-                                        </div>
-
-                                        <span className="text-3xl font-black text-slate-900">
-                                            {item.value}
-                                        </span>
-
+                                    <div
+                                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${item.iconBg}`}
+                                    >
+                                        <Icon
+                                            className={`h-6 w-6 ${item.color}`}
+                                        />
                                     </div>
 
-                                    <p className="mt-4 text-sm font-semibold text-slate-500">
-                                        {item.label}
-                                    </p>
+                                    <div>
+                                        <p className="text-3xl font-black leading-none text-white">
+                                            {item.value}
+                                        </p>
+
+                                        <p className="mt-1.5 text-sm font-semibold text-green-100/80">
+                                            {item.label}
+                                        </p>
+                                    </div>
 
                                 </div>
                             );
@@ -307,28 +323,28 @@ export default function About() {
                     </section>
 
                     {/* ==================================================
-                        WHO WE ARE
+                        WHO WE ARE — open text layout (no white box)
                     ================================================== */}
 
-                    <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+                    <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
 
-                        <div className="rounded-3xl border border-green-100 bg-white p-8 shadow-xl shadow-green-950/40 transition duration-300 hover:shadow-2xl sm:p-10">
+                        <div className="border-l-4 border-yellow-400 pl-6 sm:pl-8">
 
-                            <span className="text-xs font-black uppercase tracking-widest text-green-700">
+                            <span className="text-xs font-black uppercase tracking-widest text-yellow-300">
                                 Who We Are
                             </span>
 
-                            <h2 className="mt-3 text-3xl font-black text-slate-900">
+                            <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">
                                 A place where young people can belong.
                             </h2>
 
-                            <p className="mt-5 leading-8 text-slate-600">
+                            <p className="mt-5 leading-8 text-green-50/85">
                                 SoulSync began with a simple idea: creating a
                                 better way for the youth ministry to connect,
                                 communicate, and grow together.
                             </p>
 
-                            <p className="mt-4 leading-8 text-slate-600">
+                            <p className="mt-4 leading-8 text-green-50/85">
                                 Through organized activities, announcements,
                                 prayer support, music development, and
                                 community involvement, SoulSync helps create
@@ -336,18 +352,18 @@ export default function About() {
                                 participate and discover their purpose.
                             </p>
 
-                            <div className="mt-7 flex items-center gap-3 rounded-2xl border border-green-100 bg-gradient-to-r from-green-50 to-yellow-50 p-5">
+                            <div className="mt-7 flex items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md">
 
-                                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-                                    <MessageCircleHeart className="h-6 w-6 text-green-700" />
+                                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-yellow-400">
+                                    <MessageCircleHeart className="h-6 w-6 text-green-950" />
                                 </div>
 
                                 <div>
-                                    <h3 className="font-black text-slate-900">
+                                    <h3 className="font-black text-white">
                                         Everyone has a place here.
                                     </h3>
 
-                                    <p className="mt-1 text-sm text-slate-500">
+                                    <p className="mt-1 text-sm text-green-100/80">
                                         Connect, participate, and grow with the
                                         community.
                                     </p>
@@ -357,14 +373,12 @@ export default function About() {
 
                         </div>
 
-                        {/* ==================================================
-                            MISSION + VISION
-                        ================================================== */}
+                        {/* MISSION + VISION */}
 
                         <div className="space-y-6">
 
-                            {/* Mission */}
-                            <div className="rounded-3xl bg-gradient-to-br from-green-700 via-green-800 to-green-950 p-8 text-white shadow-xl shadow-green-950/50 transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                            {/* Mission — solid green */}
+                            <div className="rounded-3xl bg-gradient-to-br from-green-600 via-green-700 to-green-900 p-8 text-white shadow-xl shadow-green-950/50 transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
 
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-400">
                                     <Target className="h-6 w-6 text-green-950" />
@@ -387,22 +401,22 @@ export default function About() {
 
                             </div>
 
-                            {/* Vision */}
-                            <div className="rounded-3xl border border-green-100 bg-white p-8 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                            {/* Vision — outlined glass, different from Mission */}
+                            <div className="rounded-3xl border-2 border-dashed border-yellow-300/40 bg-white/5 p-8 text-white backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-yellow-300/70 hover:bg-white/10">
 
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-                                    <Eye className="h-6 w-6 text-green-700" />
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-yellow-300/40 bg-yellow-400/15">
+                                    <Eye className="h-6 w-6 text-yellow-300" />
                                 </div>
 
-                                <p className="mt-6 text-xs font-bold uppercase tracking-widest text-green-700">
+                                <p className="mt-6 text-xs font-bold uppercase tracking-widest text-yellow-300">
                                     Our Vision
                                 </p>
 
-                                <h2 className="mt-2 text-2xl font-black text-slate-900">
+                                <h2 className="mt-2 text-2xl font-black">
                                     A Generation Ready to Lead
                                 </h2>
 
-                                <p className="mt-4 text-sm leading-7 text-slate-600">
+                                <p className="mt-4 text-sm leading-7 text-green-50/85">
                                     A generation of young people rooted in
                                     faith, united in fellowship, active in
                                     service, and prepared to lead with
@@ -416,7 +430,7 @@ export default function About() {
                     </section>
 
                     {/* ==================================================
-                        VALUES
+                        VALUES — each value has its own brand color
                     ================================================== */}
 
                     <section>
@@ -446,22 +460,35 @@ export default function About() {
                                 return (
                                     <div
                                         key={value.title}
-                                        className="group rounded-2xl border border-green-100 bg-white p-6 text-center shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:border-green-200 hover:shadow-2xl"
+                                        className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${value.gradient} p-6 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:shadow-2xl`}
                                     >
 
-                                        <div
-                                            className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${value.gradient} text-white shadow-md transition duration-300 group-hover:scale-110 group-hover:rotate-3`}
-                                        >
-                                            <Icon className="h-7 w-7" />
+                                        {/* Large faded icon watermark */}
+                                        <Icon
+                                            className={`pointer-events-none absolute -bottom-6 -right-6 h-32 w-32 transition duration-500 group-hover:scale-110 group-hover:-rotate-6 ${value.mark}`}
+                                        />
+
+                                        <div className="relative">
+
+                                            <div
+                                                className={`flex h-12 w-12 items-center justify-center rounded-xl ${value.chip}`}
+                                            >
+                                                <Icon className="h-6 w-6" />
+                                            </div>
+
+                                            <h3
+                                                className={`mt-5 text-xl font-black ${value.text}`}
+                                            >
+                                                {value.title}
+                                            </h3>
+
+                                            <p
+                                                className={`mt-3 text-sm leading-6 ${value.desc}`}
+                                            >
+                                                {value.description}
+                                            </p>
+
                                         </div>
-
-                                        <h3 className="mt-5 text-lg font-black text-slate-900">
-                                            {value.title}
-                                        </h3>
-
-                                        <p className="mt-3 text-sm leading-6 text-slate-500">
-                                            {value.description}
-                                        </p>
 
                                     </div>
                                 );
@@ -472,16 +499,18 @@ export default function About() {
                     </section>
 
                     {/* ==================================================
-                        JOURNEY
+                        JOURNEY — a connected pathway (Connect → Lead)
+                        (unchanged)
                     ================================================== */}
 
-                    <section className="relative overflow-hidden rounded-3xl border border-green-700/30 bg-gradient-to-br from-green-950 via-green-900 to-green-950 p-8 text-white shadow-xl shadow-green-950/50 sm:p-10">
+                    <section className="relative overflow-hidden rounded-3xl border border-yellow-300/20 bg-gradient-to-br from-green-800 via-green-900 to-red-950 p-8 text-white shadow-2xl shadow-green-950/60 sm:p-12">
 
-                        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-yellow-500/10 blur-3xl" />
+                        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-yellow-400/10 blur-3xl" />
 
-                        <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-red-600/15 blur-3xl" />
+                        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-red-600/20 blur-3xl" />
 
-                        <div className="relative">
+                        {/* Heading */}
+                        <div className="relative mx-auto max-w-2xl text-center">
 
                             <span className="text-xs font-black uppercase tracking-widest text-yellow-300">
                                 Our Journey
@@ -491,15 +520,22 @@ export default function About() {
                                 From Connection to Leadership
                             </h2>
 
-                            <p className="mt-4 max-w-2xl leading-7 text-green-100/70">
-                                We believe youth development is a journey.
-                                Every connection creates an opportunity to
-                                grow, serve, and lead.
+                            <p className="mt-4 leading-7 text-green-50/90">
+                                Youth development is a journey, not a single
+                                event. Every step you take here prepares you
+                                for the next one.
                             </p>
 
                         </div>
 
-                        <div className="relative mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+                        {/* Steps */}
+                        <div className="relative mt-14 grid gap-10 lg:grid-cols-4 lg:gap-6">
+
+                            {/* Connecting line — vertical on mobile */}
+                            <div className="pointer-events-none absolute bottom-7 left-7 top-7 w-px bg-gradient-to-b from-green-300/50 via-yellow-300/60 to-yellow-300/30 lg:hidden" />
+
+                            {/* Connecting line — horizontal on desktop */}
+                            <div className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-7 hidden h-px bg-gradient-to-r from-green-300/50 via-yellow-300/60 to-yellow-300/80 lg:block" />
 
                             {journey.map((item) => {
                                 const Icon = item.icon;
@@ -507,28 +543,61 @@ export default function About() {
                                 return (
                                     <div
                                         key={item.title}
-                                        className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-yellow-400/30 hover:bg-white/10"
+                                        className="relative flex gap-5 lg:flex-col lg:items-center lg:gap-0 lg:text-center"
                                     >
 
-                                        <div className="flex items-center justify-between">
+                                        {/* Step marker */}
+                                        <div className="relative z-10 shrink-0">
 
-                                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                                                <Icon className="h-5 w-5 text-yellow-300 transition group-hover:scale-110" />
+                                            <div
+                                                className={`flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-lg ${
+                                                    item.goal
+                                                        ? 'border-yellow-200 bg-yellow-400 shadow-yellow-400/30'
+                                                        : 'border-yellow-300/40 bg-green-900'
+                                                }`}
+                                            >
+                                                <Icon
+                                                    className={`h-6 w-6 ${
+                                                        item.goal
+                                                            ? 'text-green-950'
+                                                            : 'text-yellow-300'
+                                                    }`}
+                                                />
                                             </div>
 
-                                            <span className="text-2xl font-black text-white/20">
+                                            <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-[11px] font-black text-white ring-2 ring-green-900">
                                                 {item.number}
                                             </span>
 
                                         </div>
 
-                                        <h3 className="mt-6 text-xl font-black">
-                                            {item.title}
-                                        </h3>
+                                        {/* Step content */}
+                                        <div className="min-w-0 lg:mt-6">
 
-                                        <p className="mt-3 text-sm leading-6 text-green-100/60">
-                                            {item.description}
-                                        </p>
+                                            <h3 className="text-xl font-black">
+                                                {item.title}
+                                            </h3>
+
+                                            <p className="mt-2 text-sm leading-6 text-green-50/85">
+                                                {item.description}
+                                            </p>
+
+                                            {item.goal ? (
+                                                <span className="mt-4 inline-flex rounded-full bg-yellow-400 px-3 py-1 text-xs font-black text-green-950">
+                                                    Where it leads
+                                                </span>
+                                            ) : (
+                                                <Link
+                                                    href={route(item.route)}
+                                                    className="group mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-yellow-300 transition hover:text-white"
+                                                >
+                                                    {item.cta}
+
+                                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                                </Link>
+                                            )}
+
+                                        </div>
 
                                     </div>
                                 );
@@ -539,22 +608,22 @@ export default function About() {
                     </section>
 
                     {/* ==================================================
-                        STORY
+                        STORY — open text + gifts card
                     ================================================== */}
 
-                    <section className="grid gap-6 lg:grid-cols-2">
+                    <section className="grid gap-10 lg:grid-cols-2 lg:gap-14">
 
-                        <div className="rounded-3xl border border-green-100 bg-white p-8 shadow-xl shadow-green-950/40 transition duration-300 hover:shadow-2xl">
+                        <div className="flex flex-col justify-center border-l-4 border-green-400 pl-6 sm:pl-8">
 
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-                                <BookOpen className="h-6 w-6 text-green-700" />
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-400/20">
+                                <BookOpen className="h-6 w-6 text-green-300" />
                             </div>
 
-                            <h2 className="mt-6 text-2xl font-black text-slate-900">
+                            <h2 className="mt-6 text-2xl font-black text-white sm:text-3xl">
                                 Our Story
                             </h2>
 
-                            <p className="mt-4 leading-7 text-slate-600">
+                            <p className="mt-4 leading-7 text-green-50/85">
                                 What started as a simple idea to bring young
                                 people closer together has grown into a
                                 platform that supports communication,
@@ -562,7 +631,7 @@ export default function About() {
                                 engagement.
                             </p>
 
-                            <p className="mt-4 leading-7 text-slate-600">
+                            <p className="mt-4 leading-7 text-green-50/85">
                                 SoulSync continues to provide opportunities
                                 for young people to discover their gifts,
                                 strengthen relationships, and take an active
@@ -574,6 +643,8 @@ export default function About() {
                         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-700 via-red-800 to-green-900 p-8 text-white shadow-xl shadow-green-950/50 transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
 
                             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-yellow-400/20 blur-2xl" />
+
+                            <Music className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 text-white/10" />
 
                             <div className="relative">
 
@@ -608,24 +679,26 @@ export default function About() {
                     </section>
 
                     {/* ==================================================
-                        COMMUNITY SCHEDULE
+                        COMMUNITY SCHEDULE — bold yellow banner
                     ================================================== */}
 
-                    <section className="rounded-3xl border border-green-100 bg-white p-8 shadow-xl shadow-green-950/40 transition duration-300 hover:shadow-2xl sm:p-10">
+                    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-yellow-400 via-yellow-400 to-yellow-300 p-8 shadow-xl shadow-green-950/50 sm:p-10">
 
-                        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+                        <CalendarDays className="pointer-events-none absolute -bottom-10 left-1/3 h-48 w-48 text-green-950/5" />
+
+                        <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
 
                             <div>
 
-                                <span className="text-xs font-black uppercase tracking-widest text-green-700">
+                                <span className="text-xs font-black uppercase tracking-widest text-green-900">
                                     Community Schedule
                                 </span>
 
-                                <h2 className="mt-2 text-3xl font-black text-slate-900">
+                                <h2 className="mt-2 text-3xl font-black text-green-950 sm:text-4xl">
                                     When We Meet
                                 </h2>
 
-                                <p className="mt-4 max-w-2xl leading-7 text-slate-600">
+                                <p className="mt-4 max-w-2xl leading-7 text-green-950/80">
                                     Join us for regular fellowship and
                                     community activities where you can
                                     connect with other young people and grow
@@ -634,25 +707,25 @@ export default function About() {
 
                             </div>
 
-                            <div className="rounded-2xl border border-green-100 bg-gradient-to-br from-green-50 to-yellow-50 p-6 lg:min-w-[280px]">
+                            <div className="rounded-2xl bg-green-950 p-6 text-white shadow-xl lg:min-w-[280px]">
 
                                 <div className="flex items-center gap-4">
 
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
-                                        <CalendarDays className="h-6 w-6 text-green-700" />
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-400">
+                                        <CalendarDays className="h-6 w-6 text-green-950" />
                                     </div>
 
                                     <div>
 
-                                        <p className="font-black text-slate-900">
+                                        <p className="font-black">
                                             Every Sunday
                                         </p>
 
-                                        <p className="mt-1 text-sm text-slate-500">
+                                        <p className="mt-1 text-sm text-green-100">
                                             3:00 PM
                                         </p>
 
-                                        <p className="mt-1 text-xs text-slate-400">
+                                        <p className="mt-1 text-xs text-green-200/70">
                                             Fellowship Hall
                                         </p>
 
@@ -723,4 +796,3 @@ export default function About() {
         </AuthenticatedLayout>
     );
 }
-

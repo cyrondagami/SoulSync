@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,17 +26,44 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Update the user's profile information (including profile photo).
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->safe()->only([
+            'name',
+            'email',
+            'gmail',
+            'contact_number',
+            'full_name',
+            'birthdate',
+            'gender',
+            'address',
+        ]));
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Remove current photo
+        if ($request->boolean('remove_photo') && $user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+            $user->profile_photo = null;
+        }
+
+        // Upload new photo
+        if ($request->hasFile('photo')) {
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $user->profile_photo = $request->file('photo')
+                ->store('profile-photos', 'public');
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit');
     }
@@ -52,6 +80,10 @@ class ProfileController extends Controller
         $user = $request->user();
 
         Auth::logout();
+
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
 
         $user->delete();
 

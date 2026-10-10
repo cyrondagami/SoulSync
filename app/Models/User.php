@@ -19,11 +19,31 @@ use Illuminate\Support\Carbon;
  * @property string $password
  * @property string $role
  * @property string|null $age_group
+ * @property string|null $profile_photo
+ * @property string|null $gmail
+ * @property string|null $contact_number
+ * @property string|null $full_name
+ * @property Carbon|null $birthdate
+ * @property string|null $gender
+ * @property string|null $address
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'role', 'age_group'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'role',
+    'age_group',
+    'profile_photo',
+    'gmail',
+    'contact_number',
+    'full_name',
+    'birthdate',
+    'gender',
+    'address',
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -40,6 +60,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birthdate' => 'date:Y-m-d',
         ];
     }
 }

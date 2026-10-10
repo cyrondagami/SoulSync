@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -59,6 +61,81 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_user_can_upload_a_profile_photo(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'photo' => UploadedFile::fake()->image('avatar.jpg'),
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertNotNull($user->profile_photo);
+        Storage::disk('public')->assertExists($user->profile_photo);
+    }
+
+    public function test_uploading_a_new_photo_replaces_the_old_one(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'photo' => UploadedFile::fake()->image('first.jpg'),
+        ]);
+
+        $oldPath = $user->refresh()->profile_photo;
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'photo' => UploadedFile::fake()->image('second.png'),
+        ]);
+
+        $newPath = $user->refresh()->profile_photo;
+
+        $this->assertNotSame($oldPath, $newPath);
+        Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function test_user_can_remove_their_profile_photo(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'photo' => UploadedFile::fake()->image('avatar.jpg'),
+        ]);
+
+        $path = $user->refresh()->profile_photo;
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'remove_photo' => true,
+        ]);
+
+        $this->assertNull($user->refresh()->profile_photo);
+        Storage::disk('public')->assertMissing($path);
     }
 
     public function test_user_can_delete_their_account(): void

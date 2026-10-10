@@ -44,8 +44,10 @@ const emptyForm = {
 const inputClass =
     'w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100';
 
-export default function MusicClasses({ classes = [] }) {
+export default function MusicClasses({ classes: rawClasses }) {
     const { flash } = usePage().props;
+
+    const classes = Array.isArray(rawClasses) ? rawClasses : [];
 
     const [search, setSearch] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -53,17 +55,18 @@ export default function MusicClasses({ classes = [] }) {
     const [form, setForm] = useState(emptyForm);
 
     const activeClass = classes.find((c) => c.id === requestsClassId);
+    const activeEnrollments = activeClass?.enrollments ?? [];
 
-    const totalStudents = classes.reduce((t, c) => t + c.students, 0);
-    const totalPending = classes.reduce((t, c) => t + c.pending_count, 0);
+    const totalStudents = classes.reduce((t, c) => t + (c.students ?? 0), 0);
+    const totalPending = classes.reduce((t, c) => t + (c.pending_count ?? 0), 0);
 
     const filteredClasses = classes.filter((item) => {
         const keyword = search.toLowerCase();
 
         return (
-            item.name.toLowerCase().includes(keyword) ||
-            item.instructor.toLowerCase().includes(keyword) ||
-            item.type.toLowerCase().includes(keyword)
+            (item.name ?? '').toLowerCase().includes(keyword) ||
+            (item.instructor ?? '').toLowerCase().includes(keyword) ||
+            (item.type ?? '').toLowerCase().includes(keyword)
         );
     });
 
@@ -319,7 +322,7 @@ export default function MusicClasses({ classes = [] }) {
 
                                         <td className="px-6 py-5 text-center">
                                             <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-black text-green-800">
-                                                {item.students}/{item.capacity}
+                                                {item.students ?? 0}/{item.capacity}
                                             </span>
                                         </td>
 
@@ -333,7 +336,7 @@ export default function MusicClasses({ classes = [] }) {
                                                 >
                                                     <Inbox className="h-4 w-4" />
                                                     Requests
-                                                    {item.pending_count > 0 && (
+                                                    {(item.pending_count ?? 0) > 0 && (
                                                         <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] text-white">
                                                             {item.pending_count}
                                                         </span>
@@ -394,7 +397,7 @@ export default function MusicClasses({ classes = [] }) {
                                     </div>
 
                                     <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-black text-green-800">
-                                        {item.students}/{item.capacity}
+                                        {item.students ?? 0}/{item.capacity}
                                     </span>
                                 </div>
 
@@ -420,7 +423,7 @@ export default function MusicClasses({ classes = [] }) {
                                     >
                                         <Inbox className="h-4 w-4" />
                                         Requests
-                                        {item.pending_count > 0 && (
+                                        {(item.pending_count ?? 0) > 0 && (
                                             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] text-white">
                                                 {item.pending_count}
                                             </span>
@@ -622,7 +625,7 @@ export default function MusicClasses({ classes = [] }) {
                                     {activeClass.name}
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Join requests • {activeClass.students}/
+                                    Join requests • {activeClass.students ?? 0}/
                                     {activeClass.capacity} approved
                                 </p>
                             </div>
@@ -636,7 +639,7 @@ export default function MusicClasses({ classes = [] }) {
                         </div>
 
                         <div className="flex-1 space-y-3 overflow-y-auto p-6">
-                            {activeClass.enrollments.length === 0 && (
+                            {activeEnrollments.length === 0 && (
                                 <div className="py-10 text-center">
                                     <Inbox className="mx-auto h-10 w-10 text-gray-300" />
                                     <p className="mt-3 text-sm text-gray-500">
@@ -645,7 +648,7 @@ export default function MusicClasses({ classes = [] }) {
                                 </div>
                             )}
 
-                            {activeClass.enrollments.map((e) => (
+                            {activeEnrollments.map((e) => (
                                 <div
                                     key={e.id}
                                     className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center"
