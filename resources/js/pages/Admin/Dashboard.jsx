@@ -1,31 +1,297 @@
-import { Head, Link, router } from '@inertiajs/react';
-import {
-    LayoutDashboard,
-    Users,
-    CalendarDays,
-    Megaphone,
-    Heart,
-    Music,
-    LogOut,
-    ShieldCheck,
-    ArrowRight,
-    Sparkles,
-    Activity,
-    Settings,
-    CheckCircle2,
-    UserCheck,
-    Bell,
-    Shield,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
 
-export default function Dashboard() {
+import React, { useEffect, useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import {
+    Activity,
+    ArrowRight,
+    CalendarDays,
+    CheckCircle2,
+    Heart,
+    Megaphone,
+    Music,
+    Settings,
+    Sparkles,
+    Users,
+    HandHeart,
+    BarChart3,
+} from 'lucide-react';
+
+import AdminLayout from '@/Layouts/AdminLayout';
+
+const formatNumber = (value) =>
+    Number(value ?? 0).toLocaleString();
+
+const MANAGEMENT_ITEMS = [
+    {
+        title: 'User Management',
+        description: 'View and manage SoulSync members.',
+        href: '/admin/users',
+        icon: Users,
+    },
+    {
+        title: 'Events Management',
+        description: 'Manage upcoming community events.',
+        href: '/admin/events',
+        icon: CalendarDays,
+    },
+    {
+        title: 'Announcements',
+        description: 'Publish important community updates.',
+        href: '/admin/announcements',
+        icon: Megaphone,
+    },
+    {
+        title: 'Prayer Requests',
+        description: 'Review submitted prayer requests.',
+        href: '/admin/prayer-requests',
+        icon: Heart,
+    },
+    {
+        title: 'Music Classes',
+        description: 'Manage music classes and activities.',
+        href: '/admin/music-classes',
+        icon: Music,
+    },
+];
+
+const SUMMARY_ITEMS = [
+    {
+        key: 'totalUsers',
+        title: 'Registered Users',
+        icon: Users,
+        color: 'bg-emerald-600',
+        light: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    },
+    {
+        key: 'totalEvents',
+        title: 'Total Events',
+        icon: CalendarDays,
+        color: 'bg-green-600',
+        light: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
+    },
+    {
+        key: 'totalAnnouncements',
+        title: 'Announcements',
+        icon: Megaphone,
+        color: 'bg-lime-600',
+        light: 'bg-lime-50 text-lime-700 dark:bg-lime-950 dark:text-lime-300',
+    },
+    {
+        key: 'totalPrayerRequests',
+        title: 'Prayer Requests',
+        icon: HandHeart,
+        color: 'bg-teal-600',
+        light: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300',
+    },
+];
+
+function SectionHeading({ icon: Icon, title, description }) {
+    return (
+        <div className="mb-5 flex items-start gap-3">
+            <div className="rounded-xl bg-green-100 p-3 text-green-700 dark:bg-green-900/60 dark:text-green-300">
+                <Icon size={22} />
+            </div>
+
+            <div>
+                <h2 className="text-xl font-black text-gray-900 dark:text-white">
+                    {title}
+                </h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {description}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function SummaryCard({ item, value }) {
+    const Icon = item.icon;
+
+    return (
+        <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-green-900 dark:bg-gray-900">
+            <div className="flex items-center justify-between gap-3">
+                <div className={`rounded-xl p-3 ${item.light}`}>
+                    <Icon size={22} />
+                </div>
+
+                <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700 dark:bg-green-950 dark:text-green-300">
+                    Live count
+                </span>
+            </div>
+
+            <p className="mt-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                {item.title}
+            </p>
+
+            <p className="mt-1 text-3xl font-black text-gray-900 dark:text-white">
+                {formatNumber(value)}
+            </p>
+        </div>
+    );
+}
+
+function WeeklyActivityChart({ data }) {
+    const chartData = Array.isArray(data) ? data : [];
+
+    const maxCount = Math.max(
+        1,
+        ...chartData.map((item) => Number(item.count) || 0),
+    );
+
+    return (
+        <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm dark:border-green-900 dark:bg-gray-900 sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h3 className="text-lg font-black text-gray-900 dark:text-white">
+                        Weekly Activity
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        New records created in the last seven days
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700 dark:bg-green-950 dark:text-green-300">
+                    <Activity size={15} />
+                    Last 7 days
+                </div>
+            </div>
+
+            {chartData.length > 0 ? (
+                <div className="mt-8 flex h-60 items-end gap-2 border-b border-gray-200 pb-2 dark:border-gray-700 sm:gap-4">
+                    {chartData.map((item, index) => {
+                        const count = Number(item.count) || 0;
+                        const height =
+                            count > 0
+                                ? Math.max(8, (count / maxCount) * 100)
+                                : 3;
+
+                        return (
+                            <div
+                                key={`${item.label}-${index}`}
+                                className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
+                            >
+                                <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
+                                    {formatNumber(count)}
+                                </span>
+
+                                <div className="flex h-[75%] w-full items-end justify-center">
+                                    <div
+                                        title={`${item.label}: ${count} records`}
+                                        className="w-full max-w-12 rounded-t-lg bg-gradient-to-t from-green-700 to-emerald-400 transition-all duration-500 hover:from-green-800 hover:to-lime-400"
+                                        style={{ height: `${height}%` }}
+                                    />
+                                </div>
+
+                                <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 sm:text-xs">
+                                    {item.label}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="mt-6 flex h-60 flex-col items-center justify-center rounded-xl bg-green-50 text-center dark:bg-green-950/40">
+                    <BarChart3 size={38} className="text-green-600 dark:text-green-300" />
+
+                    <p className="mt-3 font-bold text-gray-800 dark:text-white">
+                        No activity data available
+                    </p>
+
+                    <p className="mt-1 px-4 text-sm text-gray-500 dark:text-gray-400">
+                        Data will appear here when the server provides weekly activity.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ContentBreakdown({ analytics }) {
+    const items = [
+        {
+            label: 'Registered Users',
+            value: Number(analytics.totalUsers) || 0,
+        },
+        {
+            label: 'Events',
+            value: Number(analytics.totalEvents) || 0,
+        },
+        {
+            label: 'Announcements',
+            value: Number(analytics.totalAnnouncements) || 0,
+        },
+        {
+            label: 'Prayer Requests',
+            value: Number(analytics.totalPrayerRequests) || 0,
+        },
+    ];
+
+    const total = items.reduce((sum, item) => sum + item.value, 0);
+
+    return (
+        <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm dark:border-green-900 dark:bg-gray-900 sm:p-6">
+            <h3 className="text-lg font-black text-gray-900 dark:text-white">
+                Data Overview
+            </h3>
+
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Distribution of available records
+            </p>
+
+            <div className="mt-6 space-y-5">
+                {items.map((item, index) => {
+                    const percentage =
+                        total > 0 ? (item.value / total) * 100 : 0;
+
+                    const colors = [
+                        'bg-emerald-600',
+                        'bg-green-500',
+                        'bg-lime-500',
+                        'bg-teal-500',
+                    ];
+
+                    return (
+                        <div key={item.label}>
+                            <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                                    {item.label}
+                                </span>
+
+                                <span className="font-black text-gray-900 dark:text-white">
+                                    {formatNumber(item.value)}
+                                </span>
+                            </div>
+
+                            <div className="h-2.5 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                                <div
+                                    className={`h-full rounded-full transition-all duration-500 ${colors[index]}`}
+                                    style={{ width: `${percentage}%` }}
+                                />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <div className="mt-7 rounded-xl bg-green-50 p-4 dark:bg-green-950/40">
+                <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                    Total records across these categories
+                </p>
+                <p className="mt-1 text-2xl font-black text-green-900 dark:text-white">
+                    {formatNumber(total)}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default function Dashboard({ analytics = {} }) {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date());
-        }, 1000);
+        }, 60000);
 
         return () => clearInterval(timer);
     }, []);
@@ -39,791 +305,183 @@ export default function Dashboard() {
               ? 'Good afternoon'
               : 'Good evening';
 
-    const formattedDate = currentTime.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-    });
-
-    const formattedTime = currentTime.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    });
-
-    const logout = () => {
-        router.post('/logout');
-    };
-
-    const statistics = [
-        {
-            title: 'Registered Users',
-            value: '—',
-            description: 'Total members',
-            icon: Users,
-            gradient: 'from-green-500 to-green-700',
-            bg: 'bg-green-50',
-            iconColor: 'text-green-700',
-        },
-        {
-            title: 'Total Events',
-            value: '—',
-            description: 'Scheduled activities',
-            icon: CalendarDays,
-            gradient: 'from-yellow-400 to-yellow-600',
-            bg: 'bg-yellow-50',
-            iconColor: 'text-yellow-600',
-        },
-        {
-            title: 'Announcements',
-            value: '—',
-            description: 'Published updates',
-            icon: Megaphone,
-            gradient: 'from-red-500 to-red-700',
-            bg: 'bg-red-50',
-            iconColor: 'text-red-600',
-        },
-        {
-            title: 'Prayer Requests',
-            value: '—',
-            description: 'Community prayers',
-            icon: Heart,
-            gradient: 'from-green-600 to-green-800',
-            bg: 'bg-green-50',
-            iconColor: 'text-green-700',
-        },
-    ];
-
-    const managementItems = [
-        {
-            title: 'Manage Users',
-            description: 'View and manage registered SoulSync users.',
-            icon: Users,
-            href: '/admin/users',
-            gradient: 'from-green-500 to-green-700',
-        },
-        {
-            title: 'Manage Events',
-            description: 'Create, update, and manage ministry events.',
-            icon: CalendarDays,
-            href: '/admin/events',
-            gradient: 'from-yellow-400 to-yellow-600',
-        },
-        {
-            title: 'Announcements',
-            description: 'Publish and manage ministry announcements.',
-            icon: Megaphone,
-            href: '/admin/announcements',
-            gradient: 'from-red-500 to-red-700',
-        },
-        {
-            title: 'Prayer Requests',
-            description: 'View and manage community prayer requests.',
-            icon: Heart,
-            href: '/prayer-requests',
-            gradient: 'from-green-600 to-green-800',
-        },
-        {
-            title: 'Music Classes',
-            description: 'Manage music classes and ministry activities.',
-            icon: Music,
-            href: '/music-classes',
-            gradient: 'from-yellow-500 to-green-600',
-        },
-    ];
+    const weeklyActivity = analytics.weeklyActivity ?? [];
 
     return (
-        <>
-            <Head title="Admin Dashboard" />
+        <AdminLayout>
+            <Head title="Admin Dashboard | SoulSync" />
 
-            <div className="min-h-screen bg-gradient-to-br from-green-950 via-green-900 to-green-950">
+            <div className="min-h-screen space-y-8 bg-gray-50 p-4 dark:bg-gray-950 sm:p-6 lg:p-8">
+                {/* Welcome banner */}
+                <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 p-6 text-white shadow-lg sm:p-8">
+                    <div className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full border-[30px] border-white/10" />
+                    <div className="pointer-events-none absolute -bottom-20 right-36 h-48 w-48 rounded-full bg-lime-400/10 blur-2xl" />
 
-                {/* =====================================================
-                    SIDEBAR
-                ====================================================== */}
-
-                <aside className="fixed left-0 top-0 z-50 hidden h-screen w-72 overflow-hidden border-r border-white/10 bg-green-950/95 text-white shadow-2xl backdrop-blur-xl lg:block">
-
-                    {/* Decorative glows */}
-                    <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-green-500/15 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-red-500/15 blur-3xl" />
-                    <div className="pointer-events-none absolute right-0 top-1/3 h-40 w-40 rounded-full bg-yellow-400/10 blur-3xl" />
-
-                    {/* LOGO */}
-                    <div className="relative flex h-24 items-center gap-3 border-b border-white/10 px-6">
-
-                        <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white/10 shadow-lg">
-                            <img
-                                src="/images/logo.png"
-                                alt="SoulSync"
-                                className="h-10 w-10 object-contain"
-                            />
-                        </div>
-
+                    <div className="relative z-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
                         <div>
-                            <h1 className="text-xl font-black tracking-tight">
-                                SoulSync
+                            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold">
+                                <Sparkles size={15} />
+                                SOULSYNC ADMIN CENTER
+                            </div>
+
+                            <h1 className="text-3xl font-black sm:text-4xl">
+                               {greeting} Admin!
                             </h1>
 
-                            <p className="text-xs font-medium text-green-300">
-                                Administration
+                            <p className="mt-3 max-w-xl text-sm leading-6 text-green-50 sm:text-base">
+                                Manage your community, monitor activity, and
+                                keep everything connected in one place.
+                            </p>
+
+                            <p className="mt-4 flex items-center gap-2 text-sm text-green-100">
+                                <CalendarDays size={16} />
+                                {currentTime.toLocaleDateString(undefined, {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                })}
                             </p>
                         </div>
 
+                        <div className="flex h-20 w-20 shrink-0 items-center justify-center self-start rounded-2xl border border-white/20 bg-white/10 sm:self-center">
+                            <Heart size={42} />
+                        </div>
                     </div>
+                </section>
 
-                    {/* ADMIN PROFILE */}
-                    <div className="relative mx-4 mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+                {/* System overview */}
+                <section>
+                    <SectionHeading
+                        icon={Activity}
+                        title="System Overview"
+                        description="Current totals from your SoulSync database."
+                    />
 
-                        <div className="flex items-center gap-3">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        {SUMMARY_ITEMS.map((item) => (
+                            <SummaryCard
+                                key={item.key}
+                                item={item}
+                                value={analytics[item.key] ?? 0}
+                            />
+                        ))}
+                    </div>
+                </section>
 
-                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-700 shadow-lg">
-                                <Shield className="h-5 w-5 text-white" />
-                            </div>
+                {/* Visual analytics */}
+                <section>
+                    <SectionHeading
+                        icon={BarChart3}
+                        title="Visual Analytics"
+                        description="Review weekly activity and the distribution of community records."
+                    />
 
-                            <div className="min-w-0">
-                                <p className="truncate text-sm font-bold text-white">
-                                    Administrator
-                                </p>
-
-                                <p className="text-xs text-green-300">
-                                    System Admin
-                                </p>
-                            </div>
-
+                    <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
+                        <div className="xl:col-span-3">
+                            <WeeklyActivityChart data={weeklyActivity} />
                         </div>
 
-                    </div>
-
-                    {/* NAVIGATION */}
-                    <nav className="relative mt-8 px-4">
-
-                        <p className="mb-4 px-3 text-[10px] font-black uppercase tracking-[0.2em] text-green-400/60">
-                            Administration
-                        </p>
-
-                        {/* Dashboard */}
-                        <Link
-                            href="/admin/dashboard"
-                            className="group mb-2 flex items-center gap-3 rounded-xl bg-gradient-to-r from-green-600 to-green-700 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-green-950/50 transition duration-300 hover:-translate-y-0.5 hover:from-green-500 hover:to-green-700"
-                        >
-                            <LayoutDashboard className="h-5 w-5" />
-
-                            <span>Dashboard</span>
-
-                            <ArrowRight className="ml-auto h-4 w-4 opacity-70 transition group-hover:translate-x-1" />
-                        </Link>
-
-                        {/* Users */}
-                        <Link
-                            href="/admin/users"
-                            className="group mb-2 flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-white/10 hover:text-white"
-                        >
-                            <Users className="h-5 w-5 text-green-300 transition group-hover:text-green-200" />
-                            <span>Users</span>
-                        </Link>
-
-                        {/* Events */}
-                        <Link
-                            href="/admin/events"
-                            className="group mb-2 flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-white/10 hover:text-white"
-                        >
-                            <CalendarDays className="h-5 w-5 text-yellow-300 transition group-hover:text-yellow-200" />
-                            <span>Events</span>
-                        </Link>
-
-                        {/* Announcements */}
-                        <Link
-                            href="/admin/announcements"
-                            className="group mb-2 flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-white/10 hover:text-white"
-                        >
-                            <Megaphone className="h-5 w-5 text-red-300 transition group-hover:text-red-200" />
-                            <span>Announcements</span>
-                        </Link>
-
-                        {/* Prayer Requests */}
-                        <Link
-                            href="/prayer-requests"
-                            className="group mb-2 flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-white/10 hover:text-white"
-                        >
-                            <Heart className="h-5 w-5 text-red-300 transition group-hover:text-red-200" />
-                            <span>Prayer Requests</span>
-                        </Link>
-
-                        {/* Music Classes */}
-                        <Link
-                            href="/music-classes"
-                            className="group mb-2 flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-white/10 hover:text-white"
-                        >
-                            <Music className="h-5 w-5 text-yellow-300 transition group-hover:text-yellow-200" />
-                            <span>Music Classes</span>
-                        </Link>
-
-                    </nav>
-
-                    {/* LOGOUT */}
-                    <div className="absolute bottom-0 left-0 w-full border-t border-white/10 bg-green-950/90 p-4">
-
-                        <button
-                            onClick={logout}
-                            className="group flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-green-100 transition duration-300 hover:bg-red-600 hover:text-white"
-                        >
-                            <LogOut className="h-5 w-5 transition group-hover:translate-x-1" />
-
-                            Logout
-                        </button>
-
-                    </div>
-
-                </aside>
-
-                {/* =====================================================
-                    MAIN CONTENT
-                ====================================================== */}
-
-                <main className="min-h-screen lg:ml-72">
-
-                    {/* =================================================
-                        TOP BAR
-                    ================================================== */}
-
-                    <header className="sticky top-0 z-40 border-b border-white/10 bg-green-950/80 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-8">
-
-                        <div className="flex items-center justify-between">
-
-                            <div>
-
-                                <div className="flex items-center gap-2">
-
-                                    <Activity className="h-4 w-4 text-yellow-300" />
-
-                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                        Admin Panel
-                                    </p>
-
-                                </div>
-
-                                <h2 className="mt-1 text-xl font-black text-white sm:text-2xl">
-                                    Dashboard
-                                </h2>
-
-                            </div>
-
-                            <div className="flex items-center gap-3">
-
-                                <div className="hidden text-right sm:block">
-
-                                    <p className="text-xs font-medium text-green-200/70">
-                                        {formattedDate}
-                                    </p>
-
-                                    <p className="text-sm font-bold text-white">
-                                        {formattedTime}
-                                    </p>
-
-                                </div>
-
-                                <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/10 shadow-lg">
-                                    <img
-                                        src="/images/logo.png"
-                                        alt="SoulSync"
-                                        className="h-9 w-9 object-contain"
-                                    />
-                                </div>
-
-                            </div>
-
+                        <div className="xl:col-span-2">
+                            <ContentBreakdown analytics={analytics} />
                         </div>
+                    </div>
+                </section>
 
-                    </header>
+                {/* Management shortcuts */}
+                <section>
+                    <SectionHeading
+                        icon={Settings}
+                        title="System Management"
+                        description="Quick access to your administrative modules."
+                    />
 
-                    {/* =================================================
-                        CONTENT
-                    ================================================== */}
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        {MANAGEMENT_ITEMS.map((item) => {
+                            const Icon = item.icon;
 
-                    <div className="relative overflow-hidden px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                            return (
+                                <Link
+                                    key={item.title}
+                                    href={item.href}
+                                    className="group flex items-start gap-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-green-300 hover:shadow-md dark:border-green-900 dark:bg-gray-900 dark:hover:border-green-700"
+                                >
+                                    <div className="rounded-xl bg-green-50 p-3 text-green-700 transition group-hover:bg-green-700 group-hover:text-white dark:bg-green-950 dark:text-green-300">
+                                        <Icon size={23} />
+                                    </div>
 
-                        {/* Background glows */}
-                        <div className="pointer-events-none absolute -left-32 top-32 h-96 w-96 rounded-full bg-green-500/10 blur-3xl" />
-                        <div className="pointer-events-none absolute -right-32 top-[40rem] h-96 w-96 rounded-full bg-red-500/10 blur-3xl" />
-                        <div className="pointer-events-none absolute left-1/3 top-[80rem] h-96 w-96 rounded-full bg-yellow-400/5 blur-3xl" />
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className="font-black text-gray-900 dark:text-white">
+                                            {item.title}
+                                        </h3>
 
-                        <div className="relative mx-auto max-w-7xl space-y-8">
+                                        <p className="mt-1 text-sm leading-5 text-gray-500 dark:text-gray-400">
+                                            {item.description}
+                                        </p>
 
-                            {/* =================================================
-                                HERO / WELCOME
-                            ================================================== */}
+                                        <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-green-700 dark:text-green-300">
+                                            Open module
+                                            <ArrowRight
+                                                size={15}
+                                                className="transition group-hover:translate-x-1"
+                                            />
+                                        </span>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </section>
 
-                            <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-green-700 via-green-800 to-green-950 p-7 text-white shadow-2xl shadow-green-950/50 sm:p-10">
+                {/* System status */}
+                <section>
+                    <SectionHeading
+                        icon={CheckCircle2}
+                        title="System Status"
+                        description="Basic interface status indicators."
+                    />
 
-                                {/* Logo watermark */}
-                                <img
-                                    src="/images/logo.png"
-                                    alt=""
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute right-[-3rem] top-1/2 z-0 w-[28rem] -translate-y-1/2 select-none opacity-[0.10] sm:w-[34rem] lg:w-[40rem]"
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        {[
+                            {
+                                title: 'Admin Dashboard',
+                                description: 'Dashboard interface loaded',
+                            },
+                            {
+                                title: 'Analytics Interface',
+                                description: 'Charts and summaries available',
+                            },
+                            {
+                                title: 'Management Links',
+                                description: 'Quick-access navigation ready',
+                            },
+                        ].map((item) => (
+                            <div
+                                key={item.title}
+                                className="flex items-center gap-3 rounded-2xl border border-green-100 bg-white p-4 dark:border-green-900 dark:bg-gray-900"
+                            >
+                                <CheckCircle2
+                                    size={22}
+                                    className="shrink-0 text-green-600 dark:text-green-400"
                                 />
 
-                                {/* Decorative circles */}
-                                <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-yellow-400/10 blur-3xl" />
-
-                                <div className="absolute -bottom-32 left-1/3 h-80 w-80 rounded-full bg-red-400/10 blur-3xl" />
-
-                                <div className="absolute right-[25%] top-[20%] h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-
-                                <div className="absolute left-[10%] top-[15%] h-2 w-2 animate-pulse rounded-full bg-yellow-300" />
-
-                                <div className="absolute right-[18%] top-[30%] h-2 w-2 animate-pulse rounded-full bg-red-300" />
-
-                                <div className="relative z-10">
-
-                                    {/* Badge */}
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-md">
-
-                                        <span className="relative flex h-2 w-2">
-                                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-300 opacity-75" />
-                                            <span className="relative inline-flex h-2 w-2 rounded-full bg-yellow-300" />
-                                        </span>
-
-                                        <Sparkles className="h-4 w-4 text-yellow-300" />
-
-                                        {greeting}
-
-                                    </div>
-
-                                    <h1 className="mt-6 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                                        SoulSync
-                                        <span className="block bg-gradient-to-r from-yellow-200 via-white to-green-200 bg-clip-text text-transparent">
-                                            Administration Center
-                                        </span>
-                                    </h1>
-
-                                    <p className="mt-5 max-w-2xl text-sm leading-7 text-green-100 sm:text-base">
-                                        Manage your youth ministry community,
-                                        organize activities, publish updates,
-                                        and keep SoulSync running smoothly
-                                        from one central place.
+                                <div>
+                                    <p className="font-bold text-gray-900 dark:text-white">
+                                        {item.title}
                                     </p>
-
-                                    <div className="mt-7 flex flex-wrap gap-3">
-
-                                        <Link
-                                            href="/admin/users"
-                                            className="group inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-black text-white shadow-xl shadow-red-950/30 transition duration-300 hover:-translate-y-1 hover:bg-red-700 hover:shadow-red-500/20"
-                                        >
-                                            Manage Users
-
-                                            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                                        </Link>
-
-                                        <Link
-                                            href="/admin/events"
-                                            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20"
-                                        >
-                                            <CalendarDays className="h-4 w-4 text-yellow-300" />
-
-                                            Manage Events
-                                        </Link>
-
-                                    </div>
-
-                                    {/* Admin values */}
-                                    <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3">
-
-                                        {[
-                                            'Community',
-                                            'Organization',
-                                            'Service',
-                                            'Growth',
-                                        ].map((value, index) => (
-                                            <div
-                                                key={value}
-                                                className="flex items-center gap-2 text-xs font-semibold text-green-100"
-                                            >
-                                                <CheckCircle2
-                                                    className={`h-4 w-4 ${
-                                                        index % 3 === 0
-                                                            ? 'text-green-300'
-                                                            : index % 3 === 1
-                                                              ? 'text-yellow-300'
-                                                              : 'text-red-300'
-                                                    }`}
-                                                />
-                                                {value}
-                                            </div>
-                                        ))}
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-                            {/* =================================================
-                                STATISTICS
-                            ================================================== */}
-
-                            <section>
-
-                                <div className="mb-5">
-
-                                    <div className="flex items-center gap-2">
-
-                                        <Activity className="h-4 w-4 text-yellow-300" />
-
-                                        <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                            System Overview
-                                        </p>
-
-                                    </div>
-
-                                    <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-                                        SoulSync Statistics
-                                    </h2>
-
-                                    <p className="mt-2 text-sm text-green-100/70">
-                                        Monitor the current state of your
-                                        ministry management system.
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {item.description}
                                     </p>
-
                                 </div>
-
-                                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-                                    {statistics.map((stat) => {
-                                        const Icon = stat.icon;
-
-                                        return (
-                                            <div
-                                                key={stat.title}
-                                                className="group relative overflow-hidden rounded-2xl border border-green-100 bg-white p-5 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
-                                            >
-
-                                                {/* Decorative circle */}
-                                                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-green-50 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-
-                                                <div className="relative">
-
-                                                    <div className="flex items-center justify-between">
-
-                                                        <div
-                                                            className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} transition duration-300 group-hover:scale-110`}
-                                                        >
-                                                            <Icon
-                                                                className={`h-6 w-6 ${stat.iconColor}`}
-                                                            />
-                                                        </div>
-
-                                                        <span className="text-[10px] font-black tracking-widest text-slate-400">
-                                                            SYSTEM
-                                                        </span>
-
-                                                    </div>
-
-                                                    <p className="mt-5 text-3xl font-black text-slate-900">
-                                                        {stat.value}
-                                                    </p>
-
-                                                    <p className="mt-1 text-sm font-bold text-slate-700">
-                                                        {stat.title}
-                                                    </p>
-
-                                                    <p className="mt-1 text-xs text-slate-400">
-                                                        {stat.description}
-                                                    </p>
-
-                                                </div>
-
-                                                {/* Bottom gradient */}
-                                                <div
-                                                    className={`absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r ${stat.gradient} opacity-0 transition group-hover:opacity-100`}
-                                                />
-
-                                            </div>
-                                        );
-                                    })}
-
-                                </div>
-
-                            </section>
-
-                            {/* =================================================
-                                MANAGEMENT
-                            ================================================== */}
-
-                            <section>
-
-                                <div className="mb-6">
-
-                                    <div className="flex items-center gap-2">
-
-                                        <Settings className="h-4 w-4 text-yellow-300" />
-
-                                        <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                            Administration
-                                        </p>
-
-                                    </div>
-
-                                    <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-                                        System Management
-                                    </h2>
-
-                                    <p className="mt-2 text-sm text-green-100/70">
-                                        Access the tools you need to manage
-                                        SoulSync.
-                                    </p>
-
-                                </div>
-
-                                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
-                                    {managementItems.map((item) => {
-                                        const Icon = item.icon;
-
-                                        return (
-                                            <Link
-                                                key={item.title}
-                                                href={item.href}
-                                                className="group relative overflow-hidden rounded-2xl border border-green-100 bg-white p-6 shadow-xl shadow-green-950/40 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-2xl"
-                                            >
-
-                                                {/* Decorative circle */}
-                                                <div className="absolute -bottom-16 -right-16 h-36 w-36 rounded-full bg-green-50 transition duration-500 group-hover:scale-150" />
-
-                                                <div className="relative z-10">
-
-                                                    <div className="flex items-center justify-between">
-
-                                                        <div
-                                                            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg transition duration-300 group-hover:scale-110 group-hover:rotate-3`}
-                                                        >
-                                                            <Icon className="h-6 w-6" />
-                                                        </div>
-
-                                                        <ArrowRight className="h-5 w-5 text-slate-300 transition duration-300 group-hover:translate-x-1 group-hover:text-green-600" />
-
-                                                    </div>
-
-                                                    <h3 className="mt-5 text-lg font-black text-slate-900">
-                                                        {item.title}
-                                                    </h3>
-
-                                                    <p className="mt-2 min-h-[48px] text-sm leading-6 text-slate-500">
-                                                        {item.description}
-                                                    </p>
-
-                                                    <div className="mt-5 flex items-center text-sm font-bold text-green-700">
-
-                                                        Open Management
-
-                                                        <ArrowRight className="ml-1 h-4 w-4 transition duration-300 group-hover:translate-x-2" />
-
-                                                    </div>
-
-                                                </div>
-
-                                            </Link>
-                                        );
-                                    })}
-
-                                </div>
-
-                            </section>
-
-                            {/* =================================================
-                                SYSTEM STATUS
-                            ================================================== */}
-
-                            <section className="grid gap-6 lg:grid-cols-2">
-
-                                {/* System Status */}
-                                <div className="relative overflow-hidden rounded-3xl border border-green-100 bg-white p-7 shadow-xl shadow-green-950/40">
-
-                                    <div className="flex items-center justify-between">
-
-                                        <div className="flex items-center gap-3">
-
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50">
-                                                <Activity className="h-5 w-5 text-green-700" />
-                                            </div>
-
-                                            <div>
-                                                <h3 className="font-black text-slate-900">
-                                                    System Status
-                                                </h3>
-
-                                                <p className="text-xs text-slate-400">
-                                                    SoulSync services
-                                                </p>
-                                            </div>
-
-                                        </div>
-
-                                        <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700">
-
-                                            <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-
-                                            Online
-
-                                        </span>
-
-                                    </div>
-
-                                    <div className="mt-6 space-y-4">
-
-                                        <div className="flex items-center justify-between rounded-xl bg-green-50/60 p-4">
-
-                                            <div className="flex items-center gap-3">
-
-                                                <UserCheck className="h-5 w-5 text-green-700" />
-
-                                                <span className="text-sm font-semibold text-slate-700">
-                                                    User Management
-                                                </span>
-
-                                            </div>
-
-                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-
-                                        </div>
-
-                                        <div className="flex items-center justify-between rounded-xl bg-yellow-50/70 p-4">
-
-                                            <div className="flex items-center gap-3">
-
-                                                <Bell className="h-5 w-5 text-yellow-600" />
-
-                                                <span className="text-sm font-semibold text-slate-700">
-                                                    Announcements
-                                                </span>
-
-                                            </div>
-
-                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-
-                                        </div>
-
-                                        <div className="flex items-center justify-between rounded-xl bg-red-50/60 p-4">
-
-                                            <div className="flex items-center gap-3">
-
-                                                <CalendarDays className="h-5 w-5 text-red-600" />
-
-                                                <span className="text-sm font-semibold text-slate-700">
-                                                    Event Management
-                                                </span>
-
-                                            </div>
-
-                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                {/* Admin Info */}
-                                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-700 via-green-800 to-green-950 p-7 text-white shadow-xl shadow-green-950/50">
-
-                                    {/* Logo watermark */}
-                                    <img
-                                        src="/images/logo.png"
-                                        alt=""
-                                        aria-hidden="true"
-                                        className="pointer-events-none absolute right-[-3rem] top-1/2 z-0 w-64 -translate-y-1/2 opacity-[0.10]"
-                                    />
-
-                                    <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-yellow-400/10 blur-2xl" />
-
-                                    <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-red-500/10 blur-3xl" />
-
-                                    <div className="relative z-10">
-
-                                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
-                                            <ShieldCheck className="h-7 w-7 text-yellow-300" />
-                                        </div>
-
-                                        <h2 className="mt-6 text-2xl font-black">
-                                            Administration Center
-                                        </h2>
-
-                                        <p className="mt-3 text-sm leading-7 text-green-100">
-                                            Keep your SoulSync community
-                                            organized, connected, and active.
-                                            Use the administration tools to
-                                            manage the different areas of the
-                                            ministry system.
-                                        </p>
-
-                                        <div className="mt-6 flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                            <Shield className="h-4 w-4" />
-                                            Secure Administration
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-                            {/* =================================================
-                                FOOTER CTA
-                            ================================================== */}
-
-                            <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-green-950 via-green-900 to-red-950 px-7 py-12 text-center text-white shadow-2xl sm:px-10">
-
-                                {/* Logo watermark */}
-                                <img
-                                    src="/images/logo.png"
-                                    alt=""
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute left-1/2 top-1/2 z-0 w-80 -translate-x-1/2 -translate-y-1/2 opacity-[0.08]"
-                                />
-
-                                <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-yellow-400/10 blur-3xl" />
-
-                                <div className="absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-red-500/15 blur-3xl" />
-
-                                <div className="relative z-10">
-
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 shadow-xl">
-                                        <ShieldCheck className="h-8 w-8 text-yellow-300" />
-                                    </div>
-
-                                    <h2 className="mt-6 text-2xl font-black sm:text-3xl">
-                                        Managing SoulSync with Purpose
-                                    </h2>
-
-                                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-green-100">
-                                        Every administrative action helps
-                                        create a better experience for the
-                                        SoulSync youth community.
-                                    </p>
-
-                                    <div className="mt-7 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-yellow-300">
-
-                                        <Sparkles className="h-4 w-4" />
-
-                                        SoulSync Administration
-
-                                        <Sparkles className="h-4 w-4" />
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-                        </div>
-
+                            </div>
+                        ))}
                     </div>
+                </section>
 
-                </main>
-
+                <footer className="border-t border-gray-200 pt-5 text-center text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                    SoulSync Admin Center · {currentTime.getFullYear()}
+                </footer>
             </div>
-        </>
+        </AdminLayout>
     );
 }

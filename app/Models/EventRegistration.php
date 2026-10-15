@@ -7,7 +7,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EventRegistration extends Model
 {
-    protected $fillable = ['event_id', 'user_id', 'status', 'decline_reason'];
+    protected $fillable = [
+        'event_id',
+        'user_id',
+        'status',
+        'decline_reason',
+        'attendance_confirmed_at',
+        'attendance_confirmed_by',
+    ];
+
+    protected $casts = [
+        'attendance_confirmed_at' => 'datetime',
+    ];
 
     public function event(): BelongsTo
     {

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\UserNotification;
+use App\Services\PointRewardService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,10 +15,9 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
-   
     public function index()
     {
-        // Lahat ng user columns maliban sa sensitibo
+        // All user columns except sensitive ones
         $hidden = [
             'password', 'remember_token', 'email_verified_at',
             'two_factor_secret', 'two_factor_recovery_codes',
@@ -65,7 +66,7 @@ class EventController extends Controller
         ]);
     }
 
-         public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -95,6 +96,13 @@ class EventController extends Controller
             $event->forceFill(['requires_approval' => (bool) $requiresApproval])->save();
         }
 
+        UserNotification::sendToMembers(
+            'New event: ' . $event->title,
+            $event->title . ' is scheduled on ' . Carbon::parse($event->date)->format('M d, Y')
+                . ' at ' . $event->location . '. Check the Events page to join.',
+            'event'
+        );
+
         return redirect()
             ->route('admin.events')
             ->with('success', 'Event created successfully.');
@@ -116,7 +124,9 @@ class EventController extends Controller
     {
         $event = $registration->event;
 
-        if ($registration->status !== 'approved') {
+        $wasApproved = $registration->status === 'approved';
+
+        if (! $wasApproved) {
             $capacity = (int) ($event->capacity ?? 100);
 
             $approved = EventRegistration::where('event_id', $event->id)
@@ -135,6 +145,15 @@ class EventController extends Controller
             'status' => 'approved',
             'decline_reason' => null,
         ])->save();
+
+        if (! $wasApproved) {
+            UserNotification::send(
+                $registration->user_id,
+                'Event registration approved',
+                "Your registration for {$event->title} has been approved by the admin.",
+                'event'
+            );
+        }
 
         return back()->with('success', 'Request approved.');
     }
@@ -155,6 +174,13 @@ class EventController extends Controller
             'decline_reason' => trim($validated['reason']),
         ])->save();
 
+        UserNotification::send(
+            $registration->user_id,
+            'Event registration declined',
+            "Your registration for {$registration->event->title} was declined. Reason: " . trim($validated['reason']),
+            'event'
+        );
+
         return back()->with('success', 'Request declined.');
     }
 
@@ -166,5 +192,35 @@ class EventController extends Controller
         $registration->delete();
 
         return back()->with('success', 'Registration removed.');
+    }
+
+    public function confirmAttendance(EventRegistration $registration): RedirectResponse
+    {
+        if ($registration->status !== 'approved') {
+            return back()->withErrors([
+                'registration' => 'Only approved registrations can be marked as attended.',
+            ]);
+        }
+
+        $awarded = app(PointRewardService::class)->awardEventAttendance($registration);
+
+        if (! $awarded) {
+            return back()->withErrors([
+                'registration' => 'Attendance was already confirmed for this event.',
+            ]);
+        }
+
+        $eventName = $registration->event?->title
+            ?? $registration->event?->name
+            ?? 'the event';
+
+        UserNotification::send(
+            $registration->user_id,
+            '+10 Points Earned',
+            "Your attendance at {$eventName} was confirmed. You earned 10 points.",
+            'points'
+        );
+
+        return back()->with('success', 'Attendance confirmed. 10 points earned.');
     }
 }

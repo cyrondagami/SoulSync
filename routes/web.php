@@ -1,13 +1,20 @@
+
 <?php
 
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\AdminMusicClassController;
 use App\Http\Controllers\Admin\PrayerRequestController as AdminPrayerRequestController;
+use App\Http\Controllers\Admin\WeeklyRankingController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\DashboardController;
+
 use App\Http\Controllers\MemberEventController;
 use App\Http\Controllers\MusicClassController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PrayerRequestController;
 use App\Http\Controllers\ProfileController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,9 +32,9 @@ Route::get('/', function () {
 // STUDENT DASHBOARD
 // ======================================================
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 
 // ======================================================
@@ -39,19 +46,21 @@ Route::middleware(['auth', 'verified', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        // ==================================================
+        // WEEKLY RANKING
+        Route::get('/weekly-ranking', [
+            WeeklyRankingController::class,
+            'index',
+        ])->name('weekly-ranking');
+
+
         // ADMIN DASHBOARD
-        // ==================================================
+        Route::get('/dashboard', [
+            AdminDashboardController::class,
+            'index',
+        ])->name('dashboard');
 
-        Route::get('/dashboard', function () {
-            return Inertia::render('Admin/Dashboard');
-        })->name('dashboard');
 
-
-        // ==================================================
         // MANAGE USERS
-        // ==================================================
-
         Route::get('/users', function () {
             return Inertia::render('Admin/Users', [
                 'users' => \App\Models\User::select(
@@ -60,31 +69,41 @@ Route::middleware(['auth', 'verified', 'admin'])
                     'email',
                     'role',
                     'created_at'
-                )
-                    ->latest()
-                    ->get(),
+                )->latest()->get(),
             ]);
         })->name('users');
 
 
-        // ==================================================
         // MANAGE EVENTS
-        // ==================================================
+        Route::get('/events', [
+            EventController::class,
+            'index',
+        ])->name('events');
 
-        Route::get('/events', [EventController::class, 'index'])
-            ->name('events');
+        Route::post('/events', [
+            EventController::class,
+            'store',
+        ])->name('events.store');
 
-        Route::post('/events', [EventController::class, 'store'])
-            ->name('events.store');
+        // UPDATE EVENT
+        Route::put('/events/{event}', [
+            EventController::class,
+            'update',
+        ])->name('events.update');
 
-        Route::delete('/events/{event}', [EventController::class, 'destroy'])
-            ->name('events.destroy');
+        Route::patch('/events/{event}', [
+            EventController::class,
+            'update',
+        ])->name('events.update.patch');
+
+        // DELETE EVENT
+        Route::delete('/events/{event}', [
+            EventController::class,
+            'destroy',
+        ])->name('events.destroy');
 
 
-        // ==================================================
         // EVENT REGISTRATIONS
-        // ==================================================
-
         Route::patch(
             '/registrations/{registration}/approve',
             [EventController::class, 'approveRegistration']
@@ -95,16 +114,18 @@ Route::middleware(['auth', 'verified', 'admin'])
             [EventController::class, 'rejectRegistration']
         )->name('registrations.reject');
 
+        Route::patch(
+            '/registrations/{registration}/confirm-attendance',
+            [EventController::class, 'confirmAttendance']
+        )->name('registrations.confirm-attendance');
+
         Route::delete(
             '/registrations/{registration}',
             [EventController::class, 'destroyRegistration']
         )->name('registrations.destroy');
 
 
-        // ==================================================
         // MANAGE ANNOUNCEMENTS
-        // ==================================================
-
         Route::get(
             '/announcements',
             [AnnouncementController::class, 'index']
@@ -115,16 +136,18 @@ Route::middleware(['auth', 'verified', 'admin'])
             [AnnouncementController::class, 'store']
         )->name('announcements.store');
 
+        Route::patch(
+            '/announcements/{announcement}/toggle',
+            [AnnouncementController::class, 'toggle']
+        )->name('announcements.toggle');
+
         Route::delete(
             '/announcements/{announcement}',
             [AnnouncementController::class, 'destroy']
         )->name('announcements.destroy');
 
 
-        // ==================================================
         // MANAGE PRAYER REQUESTS
-        // ==================================================
-
         Route::get(
             '/prayer-requests',
             [AdminPrayerRequestController::class, 'index']
@@ -141,10 +164,7 @@ Route::middleware(['auth', 'verified', 'admin'])
         )->name('prayer-requests.destroy');
 
 
-        // ==================================================
         // MANAGE MUSIC CLASSES
-        // ==================================================
-
         Route::get(
             '/music-classes',
             [AdminMusicClassController::class, 'index']
@@ -170,6 +190,11 @@ Route::middleware(['auth', 'verified', 'admin'])
             [AdminMusicClassController::class, 'reject']
         )->name('music-classes.reject');
 
+        Route::patch(
+            '/music-classes/enrollments/{enrollment}/complete',
+            [AdminMusicClassController::class, 'complete']
+        )->name('music-classes.complete');
+
     });
 
 
@@ -179,19 +204,13 @@ Route::middleware(['auth', 'verified', 'admin'])
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // ==================================================
     // ABOUT
-    // ==================================================
-
     Route::get('/about', function () {
         return Inertia::render('About');
     })->name('about');
 
 
-    // ==================================================
     // STUDENT EVENTS
-    // ==================================================
-
     Route::get(
         '/events',
         [MemberEventController::class, 'index']
@@ -208,26 +227,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->name('events.leave');
 
 
-    // ==================================================
     // STUDENT ANNOUNCEMENTS
-    // ==================================================
-
     Route::get('/announcements', function () {
         return Inertia::render('Announcements', [
             'announcements' => \App\Models\Announcement::where(
                 'published',
                 true
-            )
-                ->orderBy('date', 'asc')
-                ->get(),
+            )->orderBy('date', 'asc')->get(),
         ]);
     })->name('announcements');
 
 
-    // ==================================================
     // STUDENT PRAYER REQUESTS
-    // ==================================================
-
     Route::get(
         '/prayer-requests',
         [PrayerRequestController::class, 'index']
@@ -239,10 +250,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->name('prayer.requests.store');
 
 
-    // ==================================================
     // STUDENT MUSIC CLASSES
-    // ==================================================
-
     Route::get(
         '/music-classes',
         [MusicClassController::class, 'index']
@@ -259,10 +267,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->name('music.classes.cancel');
 
 
-    // ==================================================
-    // PROFILE
-    // ==================================================
+    // NOTIFICATIONS
+    Route::post(
+        '/notifications/read-all',
+        [NotificationController::class, 'markAllRead']
+    )->name('notifications.read-all');
 
+
+    // PROFILE
     Route::get(
         '/profile',
         [ProfileController::class, 'edit']

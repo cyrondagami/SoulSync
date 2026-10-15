@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\UserNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,7 +30,11 @@ class AnnouncementController extends Controller
             'published' => 'boolean',
         ]);
 
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
+
+        if ($announcement->published) {
+            $this->notifyMembers($announcement);
+        }
 
         return redirect()
             ->route('admin.announcements')
@@ -43,5 +48,27 @@ class AnnouncementController extends Controller
         return redirect()
             ->route('admin.announcements')
             ->with('success', 'Announcement deleted successfully.');
+    }
+
+    public function toggle(Announcement $announcement)
+    {
+        $announcement->update([
+            'published' => ! $announcement->published,
+        ]);
+
+        if ($announcement->published) {
+            $this->notifyMembers($announcement);
+        }
+
+        return back()->with('success', $announcement->published ? 'Published.' : 'Unpublished.');
+    }
+
+    private function notifyMembers(Announcement $announcement): void
+    {
+        UserNotification::sendToMembers(
+            'Announcement posted: ' . $announcement->title,
+            'A new announcement has been published by the admin. Check the Announcements page for details.',
+            'announcement'
+        );
     }
 }

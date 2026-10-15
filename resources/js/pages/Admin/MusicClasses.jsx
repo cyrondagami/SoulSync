@@ -111,6 +111,13 @@ export default function MusicClasses({ classes: rawClasses }) {
             { preserveScroll: true },
         );
 
+    const complete = (id) =>
+        router.patch(
+            `/admin/music-classes/enrollments/${id}/complete`,
+            {},
+            { preserveScroll: true },
+        );
+
     return (
         <AdminLayout
             active="music"
@@ -683,6 +690,13 @@ export default function MusicClasses({ classes: rawClasses }) {
                                                 Reject
                                             </button>
                                         </div>
+                                    ) : e.status === 'approved' && !e.completed_at ? (
+                                        <button
+                                            onClick={() => complete(e.id)}
+                                            className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-black text-white hover:bg-amber-600"
+                                        >
+                                            Mark Completed
+                                        </button>
                                     ) : (
                                         <span
                                             className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase ${
@@ -691,7 +705,7 @@ export default function MusicClasses({ classes: rawClasses }) {
                                                     : 'bg-red-100 text-red-800'
                                             }`}
                                         >
-                                            {e.status}
+                                            {e.completed_at ? '+10 pts' : e.status}
                                         </span>
                                     )}
                                 </div>

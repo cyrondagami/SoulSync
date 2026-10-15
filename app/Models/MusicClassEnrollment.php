@@ -13,10 +13,13 @@ class MusicClassEnrollment extends Model
         'status',
         'reviewed_by',
         'reviewed_at',
+        'completed_at',
+        'completed_by',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function musicClass(): BelongsTo

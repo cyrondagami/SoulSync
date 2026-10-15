@@ -26,14 +26,6 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'gmail' => [
-                'nullable',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                'regex:/^[A-Za-z0-9._%+-]+@gmail\.com$/i',
-            ],
             'contact_number' => [
                 'nullable',
                 'string',
@@ -45,6 +37,7 @@ class ProfileUpdateRequest extends FormRequest
             'full_name' => ['nullable', 'string', 'max:255'],
             'birthdate' => ['nullable', 'date', 'before_or_equal:today'],
             'gender' => ['nullable', Rule::in(['male', 'female'])],
+            'age_group' => ['nullable', Rule::in(['under_18', '18_above'])],
             'address' => ['nullable', 'string', 'max:255'],
 
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -60,7 +53,6 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'gmail.regex' => 'Please enter a valid Gmail address (example: yourname@gmail.com).',
             'contact_number.regex' => 'Please enter a valid contact number (example: 09123456789).',
             'birthdate.before_or_equal' => 'Birthdate cannot be in the future.',
             'gender.in' => 'Please choose Male or Female.',

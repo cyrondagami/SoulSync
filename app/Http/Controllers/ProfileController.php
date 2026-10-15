@@ -35,11 +35,11 @@ class ProfileController extends Controller
         $user->fill($request->safe()->only([
             'name',
             'email',
-            'gmail',
             'contact_number',
             'full_name',
             'birthdate',
             'gender',
+            'age_group',
             'address',
         ]));
 

@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MusicClass;
 use App\Models\MusicClassEnrollment;
+use App\Models\UserNotification;
+use App\Services\PointRewardService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 
 class AdminMusicClassController extends Controller
 {
@@ -33,11 +36,13 @@ class AdminMusicClassController extends Controller
                         ->sortByDesc('created_at')
                         ->values()
                         ->map(fn ($e) => [
-                            'id'        => $e->id,
-                            'status'    => $e->status,
-                            'name'      => $e->user?->name,
-                            'email'     => $e->user?->email,
-                            'requested' => $e->created_at->diffForHumans(),
+                            'id'                    => $e->id,
+                            'status'                => $e->status,
+                            'name'                  => $e->user?->name,
+                            'email'                 => $e->user?->email,
+                            'requested'             => $e->created_at->diffForHumans(),
+                            'completed_at'          => $e->completed_at?->toISOString(),
+                            'attendance_confirmed' => ! is_null($e->completed_at),
                         ]),
                 ];
             });
@@ -72,33 +77,77 @@ class AdminMusicClassController extends Controller
         return back()->with('success', 'Music class deleted.');
     }
 
-    public function approve(MusicClassEnrollment $enrollment)
-    {
-        $class = $enrollment->musicClass;
+   public function approve(MusicClassEnrollment $enrollment)
+{
+    $class = $enrollment->musicClass;
 
-        $approved = $class->enrollments()->where('status', 'approved')->count();
+    $approved = $class->enrollments()->where('status', 'approved')->count();
 
-        if ($enrollment->status !== 'approved' && $approved >= $class->capacity) {
-            return back()->with('error', 'This class is already full.');
-        }
-
-        $enrollment->update([
-            'status'      => 'approved',
-            'reviewed_by' => auth()->id(),
-            'reviewed_at' => now(),
-        ]);
-
-        return back()->with('success', 'Request approved.');
+    if ($enrollment->status !== 'approved' && $approved >= $class->capacity) {
+        return back()->with('error', 'This class is already full.');
     }
 
-    public function reject(MusicClassEnrollment $enrollment)
-    {
-        $enrollment->update([
-            'status'      => 'rejected',
-            'reviewed_by' => auth()->id(),
-            'reviewed_at' => now(),
-        ]);
+    $wasApproved = $enrollment->status === 'approved';
 
-        return back()->with('success', 'Request rejected.');
+    $enrollment->update([
+        'status'      => 'approved',
+        'reviewed_by' => auth()->id(),
+        'reviewed_at' => now(),
+    ]);
+
+    if (! $wasApproved) {
+        UserNotification::send(
+            $enrollment->user_id,
+            'Music class approved',
+            "Your request to join {$class->name} has been approved by the admin.",
+            'music_class'
+        );
     }
+
+    return back()->with('success', 'Request approved.');
+}
+
+   public function reject(MusicClassEnrollment $enrollment)
+{
+    $enrollment->update([
+        'status'      => 'rejected',
+        'reviewed_by' => auth()->id(),
+        'reviewed_at' => now(),
+    ]);
+
+    UserNotification::send(
+        $enrollment->user_id,
+        'Music class request declined',
+        "Your request to join {$enrollment->musicClass->name} was declined by the admin.",
+        'music_class'
+    );
+
+    return back()->with('success', 'Request rejected.');
+}
+
+  public function complete(MusicClassEnrollment $enrollment)
+{
+    if ($enrollment->status !== 'approved') {
+        return back()->withErrors([
+            'enrollment' => 'Only approved enrollments can be marked as completed.',
+        ]);
+    }
+
+    $awarded = app(PointRewardService::class)->awardMusicClassCompletion($enrollment);
+
+    if (! $awarded) {
+        return back()->withErrors([
+            'enrollment' => 'This class completion was already marked.',
+        ]);
+    }
+
+    UserNotification::send(
+        $enrollment->user_id,
+        '+10 Points Earned',
+        "You completed {$enrollment->musicClass->name} and earned 10 points.",
+        'points'
+    );
+
+    return back()->with('success', 'Class completed. 10 points earned.');
+}
 }

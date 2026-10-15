@@ -19,6 +19,14 @@ import {
     Rocket,
 } from 'lucide-react';
 
+/* Priority badge — red only for "Important" (it has meaning) */
+const priorityClass = (priority) =>
+    priority === 'Important'
+        ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200'
+        : priority === 'Reminder'
+          ? 'border border-dashed border-green-500 bg-white text-green-800 dark:bg-green-950 dark:text-green-100'
+          : 'bg-green-100 text-green-800 dark:bg-green-800/60 dark:text-green-100';
+
 export default function Announcements({
     announcements: databaseAnnouncements = [],
 }) {
@@ -131,41 +139,99 @@ ${announcement.description}`;
 
     const featuredAnnouncement = announcements[0] || null;
 
+    // =========================================================
+    // STATISTICS
+    // =========================================================
+
+    const importantCount = announcements.filter(
+        (item) => item.priority === 'Important'
+    ).length;
+
+    const stats = [
+        {
+            label: 'Total Announcements',
+            value: announcements.length,
+            icon: Megaphone,
+            iconBg: 'bg-green-100 dark:bg-green-800/60',
+            color: 'text-green-700 dark:text-green-300',
+        },
+        {
+            label: 'Important Updates',
+            value: importantCount,
+            icon: Star,
+            iconBg: 'bg-green-100 dark:bg-green-800/60',
+            color: 'text-green-700 dark:text-green-300',
+        },
+        {
+            label: 'Saved Announcements',
+            value: saved.length,
+            icon: Bookmark,
+            iconBg: 'bg-green-100 dark:bg-green-800/60',
+            color: 'text-green-700 dark:text-green-300',
+        },
+    ];
+
+    /* "Keep Growing Together" cards — same shade pattern as About values */
+    const perks = [
+        {
+            icon: Bell,
+            title: 'Stay Updated',
+            description:
+                'Keep track of important activities, schedules, and ministry updates.',
+            gradient: 'from-green-600 to-green-800',
+            text: 'text-white',
+            desc: 'text-green-50/90',
+            chip: 'bg-white/20 text-white',
+            mark: 'text-white/10',
+        },
+        {
+            icon: Users,
+            title: 'Stay Connected',
+            description:
+                'Stay connected with the youth community and participate in upcoming activities.',
+            gradient:
+                'from-green-100 to-green-200 dark:from-green-800 dark:to-green-900',
+            text: 'text-green-950 dark:text-white',
+            desc: 'text-green-900/80 dark:text-green-100/80',
+            chip: 'bg-green-700 text-white dark:bg-green-600',
+            mark: 'text-green-700/10 dark:text-white/10',
+        },
+        {
+            icon: Rocket,
+            title: 'Get Involved',
+            description:
+                'Discover opportunities to serve, learn, participate, and grow.',
+            gradient: 'from-green-800 to-green-950',
+            text: 'text-white',
+            desc: 'text-green-50/90',
+            chip: 'bg-white/20 text-white',
+            mark: 'text-white/10',
+        },
+    ];
+
     return (
         <AuthenticatedLayout>
             <Head title="Announcements" />
 
-            <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-green-950 via-green-900 to-green-950">
+            <div className="relative min-h-screen overflow-hidden bg-white transition-colors duration-300 dark:bg-green-950">
 
-                {/* =====================================================
-                    PAGE-WIDE BRAND GLOWS
-                ====================================================== */}
+                {/* ==================================================
+                    PAGE BACKGROUND DECORATIONS
+                ================================================== */}
 
-                <div className="pointer-events-none absolute left-[-12rem] top-[35rem] h-[36rem] w-[36rem] rounded-full bg-green-400/10 blur-3xl" />
+                <div className="pointer-events-none absolute left-[-10rem] top-[45rem] h-[36rem] w-[36rem] rounded-full bg-green-400/10 blur-3xl" />
 
-                <div className="pointer-events-none absolute right-[-12rem] top-[85rem] h-[40rem] w-[40rem] rounded-full bg-red-500/10 blur-3xl" />
+                <div className="pointer-events-none absolute right-[-12rem] top-[90rem] h-[40rem] w-[40rem] rounded-full bg-green-500/10 blur-3xl" />
 
-                <div className="pointer-events-none absolute bottom-0 left-1/4 h-[32rem] w-[32rem] rounded-full bg-yellow-400/10 blur-3xl" />
+                <div className="pointer-events-none absolute bottom-0 left-1/4 h-[32rem] w-[32rem] rounded-full bg-green-300/10 blur-3xl" />
 
-                {/* =====================================================
-                    LARGE TRANSPARENT LOGO WATERMARK
-                ====================================================== */}
-
-                <img
-                    src="/images/logo.png"
-                    alt=""
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-1/2 top-[55%] z-0 w-[34rem] -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.08] sm:w-[40rem] lg:w-[48rem]"
-                />
-
-                {/* =====================================================
+                {/* ==================================================
                     HERO
-                ====================================================== */}
+                ================================================== */}
 
-                <section className="relative min-h-[560px] overflow-hidden">
+                <section className="relative overflow-hidden">
 
-                    {/* Background */}
-
+                    {/* Background Image */}
                     <div
                         className="absolute inset-0 bg-cover bg-center"
                         style={{
@@ -174,160 +240,156 @@ ${announcement.description}`;
                         }}
                     />
 
-                    {/* Green Brand Overlay */}
-
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-950/95 via-green-900/90 to-green-800/80" />
-
-                    {/* Red Accent */}
-
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-red-950/30" />
+                    {/* Green Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-900/95 via-green-800/90 to-green-700/85 dark:from-green-950/95 dark:via-green-900/90 dark:to-green-800/85" />
 
                     {/* Bottom Fade */}
+                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white to-transparent dark:from-green-950" />
 
-                    <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-green-950 to-transparent" />
+                    {/* Glows */}
+                    <div className="pointer-events-none absolute -right-32 -top-32 h-[32rem] w-[32rem] rounded-full bg-green-300/25 blur-3xl" />
 
-                    {/* Glow */}
+                    <div className="pointer-events-none absolute -bottom-40 -left-32 h-[32rem] w-[32rem] rounded-full bg-green-400/20 blur-3xl" />
 
-                    <div className="pointer-events-none absolute -right-32 -top-32 h-[32rem] w-[32rem] rounded-full bg-green-400/20 blur-3xl" />
+                    <div className="pointer-events-none absolute right-[20%] top-[15%] h-32 w-32 rounded-full bg-white/10 blur-2xl" />
 
-                    <div className="pointer-events-none absolute -bottom-40 -left-32 h-[32rem] w-[32rem] rounded-full bg-red-500/15 blur-3xl" />
-
-                    <div className="pointer-events-none absolute right-[20%] top-[15%] h-32 w-32 rounded-full bg-yellow-300/10 blur-2xl" />
+                    {/* LOGO WATERMARK */}
+                    <img
+                        src="/images/logo.png"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-1/2 top-[55%] z-0 w-[34rem] -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.12] sm:w-[40rem] lg:w-[46rem]"
+                    />
 
                     {/* Floating Particles */}
+                    <div className="absolute left-[12%] top-[25%] h-2 w-2 animate-pulse rounded-full bg-white/80" />
 
-                    <div className="absolute left-[12%] top-[25%] h-2 w-2 animate-pulse rounded-full bg-yellow-300/80" />
+                    <div className="absolute left-[35%] top-[18%] h-1.5 w-1.5 animate-pulse rounded-full bg-green-200" />
 
-                    <div className="absolute left-[35%] top-[18%] h-1.5 w-1.5 animate-pulse rounded-full bg-white/70" />
+                    <div className="absolute right-[30%] top-[32%] h-2 w-2 animate-pulse rounded-full bg-green-100" />
 
-                    <div className="absolute right-[30%] top-[32%] h-2 w-2 animate-pulse rounded-full bg-red-300/70" />
+                    <div className="absolute right-[12%] top-[20%] h-1.5 w-1.5 animate-pulse rounded-full bg-white/70" />
 
-                    <div className="absolute right-[12%] top-[20%] h-1.5 w-1.5 animate-pulse rounded-full bg-white/60" />
+                    {/* HERO CONTENT */}
+                    <div className="relative z-10 mx-auto max-w-7xl px-4 pb-36 pt-20 text-white sm:px-6 lg:px-8 lg:pb-40 lg:pt-24">
 
-                    {/* Hero Content */}
+                        <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
 
-                    <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-4 pb-32 pt-20 sm:px-6 lg:grid-cols-[1fr_330px] lg:px-8 lg:pb-36 lg:pt-28">
+                            <div className="max-w-3xl">
 
-                        {/* LEFT */}
+                                {/* Badge */}
+                                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-wider shadow-xl backdrop-blur-md">
 
-                        <div className="flex flex-col justify-center">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75" />
 
-                            {/* Badge */}
+                                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-300" />
+                                    </span>
 
-                            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-xl backdrop-blur-md">
+                                    <Megaphone className="h-4 w-4 text-green-200" />
 
-                                <span className="relative flex h-2 w-2">
-                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-300 opacity-75" />
-                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-yellow-300" />
-                                </span>
+                                    Youth Ministry Updates
+                                </div>
 
-                                <Megaphone className="h-4 w-4 text-yellow-300" />
+                                {/* Heading */}
+                                <h1 className="mt-6 text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
 
-                                Youth Ministry Updates
-                            </div>
+                                    Stay Informed.
 
-                            {/* Heading */}
+                                    <br />
 
-                            <h1 className="mt-7 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+                                    <span className="bg-gradient-to-r from-green-200 via-white to-green-100 bg-clip-text text-transparent">
+                                        Stay Connected.
+                                    </span>
 
-                                Stay Informed.
+                                </h1>
 
-                                <span className="mt-2 block bg-gradient-to-r from-yellow-200 via-white to-green-200 bg-clip-text text-transparent">
-                                    Stay Connected.
-                                </span>
+                                {/* Description */}
+                                <p className="mt-6 max-w-2xl text-lg leading-8 text-green-50">
+                                    Get the latest announcements, reminders,
+                                    activities, and important updates from the
+                                    youth ministry.
+                                </p>
 
-                            </h1>
+                                {/* Buttons */}
+                                <div className="mt-8 flex flex-wrap gap-3">
 
-                            <p className="mt-7 max-w-xl text-sm leading-7 text-green-100 sm:text-base lg:text-lg">
-                                Get the latest announcements, reminders,
-                                activities, and important updates from the
-                                youth ministry.
-                            </p>
-
-                            {/* Button */}
-
-                            <div className="mt-9 flex flex-wrap gap-3">
-
-                                <a
-                                    href="#announcements"
-                                    className="group inline-flex items-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 text-sm font-black text-white shadow-2xl shadow-red-900/30 transition duration-300 hover:-translate-y-1 hover:bg-red-500 hover:shadow-red-500/30"
-                                >
-                                    View Announcements
-
-                                    <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-1" />
-                                </a>
-
-                            </div>
-
-                            {/* Values */}
-
-                            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3">
-
-                                {[
-                                    'Stay Updated',
-                                    'Stay Connected',
-                                    'Get Involved',
-                                ].map((value) => (
-                                    <div
-                                        key={value}
-                                        className="flex items-center gap-2 text-xs font-semibold text-green-100"
+                                    <a
+                                        href="#announcements"
+                                        className="group inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-green-800 shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-2xl"
                                     >
-                                        <CheckCircle2 className="h-4 w-4 text-yellow-300" />
+                                        View Announcements
 
-                                        {value}
-                                    </div>
-                                ))}
+                                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    </a>
+
+                                </div>
+
+                                {/* Hero Values */}
+                                <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+
+                                    {[
+                                        'Stay Updated',
+                                        'Stay Connected',
+                                        'Get Involved',
+                                    ].map((value) => (
+                                        <div
+                                            key={value}
+                                            className="flex items-center gap-2 text-xs font-bold text-green-50"
+                                        >
+                                            <span className="h-2 w-2 rounded-full bg-green-300" />
+
+                                            {value}
+                                        </div>
+                                    ))}
+
+                                </div>
 
                             </div>
 
-                        </div>
+                            {/* ANNOUNCEMENT CENTER CARD */}
+                            <div className="hidden lg:block">
 
-                        {/* RIGHT INFO CARD */}
+                                <div className="rounded-3xl border border-white/20 bg-white/10 p-7 shadow-2xl backdrop-blur-xl">
 
-                        <div className="hidden items-center lg:flex">
+                                    <div className="flex items-center justify-between">
 
-                            <div className="relative w-full">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white">
+                                            <Megaphone className="h-6 w-6 text-green-800" />
+                                        </div>
 
-                                <div className="absolute inset-4 rounded-[2rem] bg-yellow-400/20 blur-2xl" />
-
-                                <div className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-7 text-center shadow-2xl backdrop-blur-xl">
-
-                                    <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-yellow-200">
-
-                                        <Bell className="h-4 w-4" />
-
-                                        Announcement Center
-                                    </div>
-
-                                    <div className="mx-auto mt-7 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/10 shadow-xl">
-
-                                        <Megaphone className="h-10 w-10 text-yellow-300" />
+                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
+                                            <Bell className="h-3.5 w-3.5" />
+                                            Announcement Center
+                                        </span>
 
                                     </div>
 
-                                    <p className="mt-6 text-4xl font-black text-white">
-                                        {announcements.length}
-                                    </p>
-
-                                    <p className="mt-2 text-sm font-medium text-green-100">
+                                    <p className="mt-8 text-sm text-green-100">
                                         Current Announcements
                                     </p>
 
-                                    <div className="my-7 h-px bg-white/10" />
+                                    <p className="mt-1 text-5xl font-black">
+                                        {announcements.length}
+                                    </p>
 
-                                    <div className="flex items-center justify-center gap-2 text-xs text-green-100">
+                                    <div className="mt-7 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4">
 
-                                        <Sparkles className="h-4 w-4 text-yellow-300" />
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
+                                            <Sparkles className="h-5 w-5 text-green-100" />
+                                        </div>
 
-                                        Keep up with the latest updates
+                                        <div>
+                                            <p className="text-sm font-bold">
+                                                Keep up with the latest updates
+                                            </p>
 
-                                    </div>
-
-                                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-red-600/80 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
-
-                                        <Bell className="h-3.5 w-3.5" />
-
-                                        Stay Connected
+                                            <p className="text-xs text-green-200">
+                                                {importantCount > 0
+                                                    ? `${importantCount} important update${importantCount === 1 ? '' : 's'} waiting.`
+                                                    : 'You are all caught up.'}
+                                            </p>
+                                        </div>
 
                                     </div>
 
@@ -338,210 +400,109 @@ ${announcement.description}`;
                         </div>
 
                     </div>
-
                 </section>
 
-                {/* =====================================================
+                {/* ==================================================
                     MAIN CONTENT
-                ====================================================== */}
+                ================================================== */}
 
                 <main
                     id="announcements"
-                    className="relative z-20 mx-auto -mt-10 max-w-7xl space-y-10 px-4 pb-14 sm:px-6 lg:px-8"
+                    className="relative z-20 mx-auto max-w-7xl space-y-16 px-4 pb-14 pt-10 sm:px-6 lg:px-8"
                 >
 
-                    {/* =================================================
+                    {/* ==================================================
                         STATS
                     ================================================== */}
 
-                    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <section className="relative z-20 -mt-24 grid overflow-hidden rounded-3xl border border-green-100 bg-white shadow-2xl shadow-green-900/15 dark:border-green-800/50 dark:bg-green-900/40 dark:shadow-black/30 sm:grid-cols-3 sm:divide-x sm:divide-green-100 dark:sm:divide-green-800/50">
 
-                        {/* TOTAL */}
+                        {stats.map((stat) => {
+                            const Icon = stat.icon;
 
-                        <div className="group relative overflow-hidden rounded-2xl border border-green-100 bg-white p-5 shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-2xl">
-
-                            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-green-100 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-
-                            <div className="relative">
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-
-                                        <Megaphone className="h-5 w-5 text-green-700" />
-
+                            return (
+                                <div
+                                    key={stat.label}
+                                    className="flex items-center gap-4 border-b border-green-100 p-6 last:border-b-0 dark:border-green-800/50 sm:border-b-0 sm:p-7"
+                                >
+                                    <div
+                                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${stat.iconBg}`}
+                                    >
+                                        <Icon
+                                            className={`h-6 w-6 ${stat.color}`}
+                                        />
                                     </div>
 
-                                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-green-600" />
+                                    <div>
+                                        <p className="text-3xl font-black leading-none text-green-950 dark:text-white">
+                                            {stat.value}
+                                        </p>
 
-                                </div>
-
-                                <p className="mt-5 text-3xl font-black text-slate-900">
-                                    {announcements.length}
-                                </p>
-
-                                <p className="mt-1 text-sm font-bold text-slate-700">
-                                    Total Announcements
-                                </p>
-
-                                <p className="mt-1 text-xs text-slate-400">
-                                    Ministry updates
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        {/* IMPORTANT */}
-
-                        <div className="group relative overflow-hidden rounded-2xl border border-yellow-100 bg-white p-5 shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:border-yellow-300 hover:shadow-2xl">
-
-                            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-yellow-100 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-
-                            <div className="relative">
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-100">
-
-                                        <Star className="h-5 w-5 text-yellow-600" />
-
+                                        <p className="mt-1.5 text-sm font-semibold text-gray-600 dark:text-green-100/70">
+                                            {stat.label}
+                                        </p>
                                     </div>
-
-                                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-yellow-600" />
-
                                 </div>
-
-                                <p className="mt-5 text-3xl font-black text-slate-900">
-                                    {
-                                        announcements.filter(
-                                            (item) =>
-                                                item.priority === 'Important'
-                                        ).length
-                                    }
-                                </p>
-
-                                <p className="mt-1 text-sm font-bold text-slate-700">
-                                    Important Updates
-                                </p>
-
-                                <p className="mt-1 text-xs text-slate-400">
-                                    Priority announcements
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        {/* SAVED */}
-
-                        <div className="group relative overflow-hidden rounded-2xl border border-red-100 bg-white p-5 shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:border-red-300 hover:shadow-2xl">
-
-                            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-red-100 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-
-                            <div className="relative">
-
-                                <div className="flex items-center justify-between">
-
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100">
-
-                                        <Bookmark className="h-5 w-5 text-red-600" />
-
-                                    </div>
-
-                                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-red-600" />
-
-                                </div>
-
-                                <p className="mt-5 text-3xl font-black text-slate-900">
-                                    {saved.length}
-                                </p>
-
-                                <p className="mt-1 text-sm font-bold text-slate-700">
-                                    Saved Announcements
-                                </p>
-
-                                <p className="mt-1 text-xs text-slate-400">
-                                    Your saved updates
-                                </p>
-
-                            </div>
-
-                        </div>
+                            );
+                        })}
 
                     </section>
 
-                    {/* =================================================
+                    {/* ==================================================
                         FEATURED ANNOUNCEMENT
                     ================================================== */}
 
                     {featuredAnnouncement ? (
 
-                        <section className="relative overflow-hidden rounded-3xl border border-green-100 bg-white shadow-xl shadow-green-950/30">
+                        <section className="overflow-hidden rounded-3xl border border-green-100 bg-white shadow-xl shadow-green-900/15 dark:border-green-800/50 dark:bg-green-900/40 dark:shadow-black/30">
 
                             <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
 
-                                {/* LEFT */}
+                                {/* Visual */}
+                                <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-green-900 p-10 text-center text-white">
 
-                                <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-gradient-to-br from-green-700 via-green-800 to-green-950 p-10 text-center text-white">
+                                    <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-green-300/20 blur-3xl" />
 
-                                    <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-yellow-300/10 blur-3xl" />
-
-                                    <div className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-red-500/15 blur-3xl" />
+                                    <div className="pointer-events-none absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
 
                                     <div className="relative z-10">
 
-                                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-white/10 text-6xl shadow-xl backdrop-blur-md">
+                                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-white/15 text-6xl shadow-xl backdrop-blur-md">
 
                                             {featuredAnnouncement.icon}
 
                                         </div>
 
-                                        <p className="mt-7 text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
+                                        <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white backdrop-blur">
+
+                                            <Star className="h-4 w-4 text-green-200" />
 
                                             Featured Announcement
 
-                                        </p>
+                                        </div>
 
-                                        <h2 className="mt-3 text-3xl font-black sm:text-4xl">
+                                        <h2 className="mt-4 text-3xl font-black sm:text-4xl">
 
                                             {featuredAnnouncement.title}
 
                                         </h2>
 
-                                        <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-bold backdrop-blur-md">
-
-                                            <Sparkles className="h-3.5 w-3.5 text-yellow-300" />
-
-                                            Latest Update
-
-                                        </div>
-
                                     </div>
 
                                 </div>
 
-                                {/* RIGHT */}
-
+                                {/* Details */}
                                 <div className="p-8 sm:p-10">
 
                                     <div className="flex flex-wrap items-center gap-2">
 
                                         <span
-                                            className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
-                                                featuredAnnouncement.priority ===
-                                                'Important'
-                                                    ? 'bg-red-100 text-red-700'
-                                                    : featuredAnnouncement.priority ===
-                                                        'Reminder'
-                                                      ? 'bg-yellow-100 text-yellow-700'
-                                                      : 'bg-green-100 text-green-700'
-                                            }`}
+                                            className={`rounded-full px-3 py-1 text-xs font-bold ${priorityClass(featuredAnnouncement.priority)}`}
                                         >
-                                            ● {featuredAnnouncement.priority}
+                                            {featuredAnnouncement.priority}
                                         </span>
 
-                                        <span className="rounded-full bg-green-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-green-700">
+                                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 dark:bg-green-800/60 dark:text-green-100">
 
                                             {featuredAnnouncement.category}
 
@@ -549,13 +510,13 @@ ${announcement.description}`;
 
                                     </div>
 
-                                    <h2 className="mt-5 text-3xl font-black text-slate-900">
+                                    <h2 className="mt-5 text-3xl font-black text-green-950 dark:text-white">
 
                                         {featuredAnnouncement.title}
 
                                     </h2>
 
-                                    <p className="mt-4 leading-7 text-slate-500">
+                                    <p className="mt-4 leading-7 text-gray-700 dark:text-green-50/85">
 
                                         {featuredAnnouncement.description}
 
@@ -563,38 +524,38 @@ ${announcement.description}`;
 
                                     <div className="mt-6 grid gap-3 sm:grid-cols-2">
 
-                                        <div className="flex items-center gap-3 rounded-xl bg-green-50 p-3">
+                                        <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-3 dark:border-green-800/50 dark:bg-green-900/50">
 
-                                            <CalendarDays className="h-5 w-5 text-green-700" />
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-700 dark:bg-green-600">
+                                                <CalendarDays className="h-5 w-5 text-white" />
+                                            </div>
 
                                             <div>
-
-                                                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-300">
                                                     Date
                                                 </p>
 
-                                                <p className="text-sm font-bold text-slate-700">
+                                                <p className="text-sm font-bold text-green-950 dark:text-white">
                                                     {featuredAnnouncement.date}
                                                 </p>
-
                                             </div>
 
                                         </div>
 
-                                        <div className="flex items-center gap-3 rounded-xl bg-yellow-50 p-3">
+                                        <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-3 dark:border-green-800/50 dark:bg-green-900/50">
 
-                                            <Clock3 className="h-5 w-5 text-yellow-600" />
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-700 dark:bg-green-600">
+                                                <Clock3 className="h-5 w-5 text-white" />
+                                            </div>
 
                                             <div>
-
-                                                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-300">
                                                     Time
                                                 </p>
 
-                                                <p className="text-sm font-bold text-slate-700">
+                                                <p className="text-sm font-bold text-green-950 dark:text-white">
                                                     {featuredAnnouncement.time}
                                                 </p>
-
                                             </div>
 
                                         </div>
@@ -608,11 +569,11 @@ ${announcement.description}`;
                                                 featuredAnnouncement
                                             )
                                         }
-                                        className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 font-bold text-white shadow-lg shadow-red-900/20 transition duration-300 hover:-translate-y-1 hover:bg-red-500 hover:shadow-xl"
+                                        className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-bold text-white shadow-lg shadow-green-900/20 transition duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl dark:bg-green-600 dark:hover:bg-green-500"
                                     >
                                         Read Full Announcement
 
-                                        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 
                                     </button>
 
@@ -624,19 +585,19 @@ ${announcement.description}`;
 
                     ) : (
 
-                        <section className="rounded-3xl border border-green-100 bg-white p-12 text-center shadow-xl shadow-green-950/30">
+                        <section className="rounded-3xl border-2 border-dashed border-green-300 bg-green-50 p-12 text-center dark:border-green-600/50 dark:bg-green-900/30">
 
-                            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-green-100">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-800/60">
 
-                                <Megaphone className="h-10 w-10 text-green-700" />
+                                <Megaphone className="h-8 w-8 text-green-700 dark:text-green-300" />
 
                             </div>
 
-                            <h2 className="mt-5 text-2xl font-black text-slate-900">
+                            <h2 className="mt-5 text-2xl font-black text-green-950 dark:text-white">
                                 No announcements yet
                             </h2>
 
-                            <p className="mt-2 text-slate-500">
+                            <p className="mt-2 text-gray-600 dark:text-green-100/70">
                                 New ministry announcements will appear here.
                             </p>
 
@@ -644,56 +605,53 @@ ${announcement.description}`;
 
                     )}
 
-                    {/* =================================================
+                    {/* ==================================================
                         ANNOUNCEMENT DIRECTORY
                     ================================================== */}
 
                     <section>
 
-                        <div className="mb-6">
+                        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
 
-                            <div className="flex items-center gap-2">
+                            <div className="border-l-4 border-green-600 pl-6 dark:border-green-400">
 
-                                <Sparkles className="h-4 w-4 text-yellow-300" />
-
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
+                                <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-300">
+                                    <Sparkles className="h-4 w-4" />
                                     Announcement Center
+                                </span>
+
+                                <h2 className="mt-2 text-3xl font-black text-green-950 dark:text-white sm:text-4xl">
+                                    Latest Updates
+                                </h2>
+
+                                <p className="mt-2 text-gray-600 dark:text-green-100/70">
+                                    Find important information and youth
+                                    ministry updates.
                                 </p>
 
                             </div>
 
-                            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-                                Latest Updates
-                            </h2>
+                            {/* Search */}
+                            <div className="relative w-full lg:w-96">
 
-                            <p className="mt-2 text-sm text-green-100/80">
-                                Find important information and youth ministry
-                                updates.
-                            </p>
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-green-700/60 dark:text-green-300/60" />
 
-                        </div>
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={(e) =>
+                                        setSearch(e.target.value)
+                                    }
+                                    placeholder="Search announcements..."
+                                    className="w-full rounded-2xl border border-green-200 bg-white py-3.5 pl-12 pr-5 text-sm text-green-950 shadow-lg shadow-green-900/10 outline-none placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/40 dark:border-green-800/50 dark:bg-green-900/40 dark:text-white dark:placeholder:text-green-100/50"
+                                />
 
-                        {/* SEARCH */}
-
-                        <div className="relative">
-
-                            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) =>
-                                    setSearch(e.target.value)
-                                }
-                                placeholder="Search announcements..."
-                                className="w-full rounded-2xl border border-green-100 bg-white px-5 py-4 pl-12 text-sm text-slate-700 shadow-xl shadow-green-950/30 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
-                            />
+                            </div>
 
                         </div>
 
-                        {/* FILTERS */}
-
-                        <div className="mt-5 flex flex-wrap gap-2">
+                        {/* Filters */}
+                        <div className="mt-6 flex flex-wrap gap-2">
 
                             {categories.map((item) => (
 
@@ -701,10 +659,10 @@ ${announcement.description}`;
                                     key={item}
                                     type="button"
                                     onClick={() => setCategory(item)}
-                                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition duration-300 ${
+                                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition ${
                                         category === item
-                                            ? 'bg-red-600 text-white shadow-lg shadow-red-900/20 hover:bg-red-500'
-                                            : 'border border-white/10 bg-white/10 text-green-100 backdrop-blur-md hover:bg-white/20 hover:text-white'
+                                            ? 'bg-green-700 text-white shadow-lg shadow-green-900/20'
+                                            : 'border border-green-200 bg-white text-green-800 hover:bg-green-50 dark:border-green-800/50 dark:bg-green-900/40 dark:text-green-100 dark:hover:bg-green-900/70'
                                     }`}
                                 >
                                     {item}
@@ -714,199 +672,184 @@ ${announcement.description}`;
 
                         </div>
 
-                        {/* CARDS */}
-
+                        {/* Cards */}
                         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-                            {filteredAnnouncements.map(
-                                (announcement) => (
+                            {filteredAnnouncements.map((announcement) => (
 
-                                    <article
-                                        key={announcement.id}
-                                        className="group relative overflow-hidden rounded-3xl border border-green-100 bg-white shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-2xl"
-                                    >
+                                <article
+                                    key={announcement.id}
+                                    className="group flex flex-col overflow-hidden rounded-3xl border border-green-100 bg-white shadow-xl shadow-green-900/15 transition duration-300 hover:-translate-y-2 hover:shadow-2xl dark:border-green-800/50 dark:bg-green-900/40 dark:shadow-black/30"
+                                >
 
-                                        {/* CARD TOP */}
+                                    {/* Card Top */}
+                                    <div className="relative overflow-hidden bg-gradient-to-br from-green-100 via-green-50 to-white p-6 dark:from-green-800/70 dark:via-green-900/60 dark:to-green-950/60">
 
-                                        <div className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-yellow-50 p-6">
+                                        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-green-400/20 blur-2xl" />
 
-                                            {announcement.id ===
-                                                featuredAnnouncement?.id && (
+                                        {announcement.id ===
+                                            featuredAnnouncement?.id && (
 
-                                                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg">
+                                            <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-green-700 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg dark:bg-green-600">
 
-                                                    <Sparkles className="h-3 w-3" />
+                                                <Sparkles className="h-3 w-3" />
 
-                                                    NEW
-
-                                                </span>
-
-                                            )}
-
-                                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-md transition duration-300 group-hover:scale-110 group-hover:rotate-2">
-
-                                                {announcement.icon}
-
-                                            </div>
-
-                                            <span className="mt-5 inline-block rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
-
-                                                {announcement.category}
+                                                NEW
 
                                             </span>
 
-                                            <h3 className="mt-3 text-xl font-black text-slate-900">
+                                        )}
 
-                                                {announcement.title}
+                                        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-md transition duration-300 group-hover:rotate-2 group-hover:scale-110 dark:bg-green-950">
 
-                                            </h3>
+                                            {announcement.icon}
 
                                         </div>
 
-                                        {/* CARD BODY */}
+                                        <span className="relative mt-5 inline-block rounded-full bg-white px-3 py-1 text-[11px] font-bold text-green-800 dark:bg-green-950 dark:text-green-100">
 
-                                        <div className="p-6">
+                                            {announcement.category}
 
-                                            <p className="line-clamp-3 text-sm leading-6 text-slate-500">
+                                        </span>
 
-                                                {announcement.description}
+                                        <h3 className="relative mt-3 text-xl font-black text-green-950 dark:text-white">
 
-                                            </p>
+                                            {announcement.title}
 
-                                            <div className="mt-5 space-y-3">
+                                        </h3>
 
-                                                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                                    </div>
 
-                                                    <CalendarDays className="h-4 w-4 text-green-600" />
+                                    {/* Card Body */}
+                                    <div className="flex flex-1 flex-col p-6">
 
-                                                    {announcement.date}
+                                        <p className="line-clamp-3 text-sm leading-6 text-gray-700 dark:text-green-50/85">
 
-                                                </div>
+                                            {announcement.description}
 
-                                                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                                        </p>
 
-                                                    <Clock3 className="h-4 w-4 text-yellow-600" />
+                                        <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-green-100/70">
 
-                                                    {announcement.time}
+                                            <div className="flex items-center gap-2">
 
-                                                </div>
+                                                <CalendarDays className="h-4 w-4 text-green-700 dark:text-green-300" />
+
+                                                {announcement.date}
 
                                             </div>
 
-                                            <div className="mt-5">
+                                            <div className="flex items-center gap-2">
 
-                                                <span
-                                                    className={`rounded-full px-3 py-1 text-[11px] font-bold ${
-                                                        announcement.priority ===
-                                                        'Important'
-                                                            ? 'bg-red-100 text-red-700'
-                                                            : announcement.priority ===
-                                                                'Reminder'
-                                                              ? 'bg-yellow-100 text-yellow-700'
-                                                              : 'bg-green-100 text-green-700'
+                                                <Clock3 className="h-4 w-4 text-green-700 dark:text-green-300" />
+
+                                                {announcement.time}
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="mt-5">
+
+                                            <span
+                                                className={`rounded-full px-3 py-1 text-[11px] font-bold ${priorityClass(announcement.priority)}`}
+                                            >
+                                                {announcement.priority}
+                                            </span>
+
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="mt-auto flex items-center justify-between border-t border-green-100 pt-5 dark:border-green-800/50">
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    toggleSaved(announcement.id)
+                                                }
+                                                className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                                                    saved.includes(
+                                                        announcement.id
+                                                    )
+                                                        ? 'bg-green-700 text-white dark:bg-green-600'
+                                                        : 'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-800/60 dark:text-green-200 dark:hover:bg-green-800'
+                                                }`}
+                                                title="Save announcement"
+                                            >
+
+                                                <Bookmark
+                                                    className={`h-4 w-4 ${
+                                                        saved.includes(
+                                                            announcement.id
+                                                        )
+                                                            ? 'fill-current'
+                                                            : ''
                                                     }`}
-                                                >
-                                                    {announcement.priority}
-                                                </span>
+                                                />
 
-                                            </div>
+                                            </button>
 
-                                            {/* ACTIONS */}
-
-                                            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-5">
+                                            <div className="flex gap-2">
 
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        toggleSaved(
-                                                            announcement.id
+                                                        shareAnnouncement(
+                                                            announcement
                                                         )
                                                     }
-                                                    className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
-                                                        saved.includes(
-                                                            announcement.id
-                                                        )
-                                                            ? 'bg-red-100 text-red-600'
-                                                            : 'bg-slate-100 text-slate-500 hover:bg-green-50 hover:text-green-700'
-                                                    }`}
-                                                    title="Save announcement"
+                                                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700 transition hover:bg-green-100 dark:bg-green-800/60 dark:text-green-200 dark:hover:bg-green-800"
+                                                    title="Share announcement"
                                                 >
 
-                                                    <Bookmark
-                                                        className={`h-4 w-4 ${
-                                                            saved.includes(
-                                                                announcement.id
-                                                            )
-                                                                ? 'fill-current'
-                                                                : ''
-                                                        }`}
-                                                    />
+                                                    <Share2 className="h-4 w-4" />
 
                                                 </button>
 
-                                                <div className="flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSelectedAnnouncement(
+                                                            announcement
+                                                        )
+                                                    }
+                                                    className="group/button inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white shadow-md transition duration-300 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg dark:bg-green-600 dark:hover:bg-green-500"
+                                                >
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            shareAnnouncement(
-                                                                announcement
-                                                            )
-                                                        }
-                                                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-yellow-50 hover:text-yellow-700"
-                                                        title="Share announcement"
-                                                    >
+                                                    Read More
 
-                                                        <Share2 className="h-4 w-4" />
+                                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/button:translate-x-1" />
 
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setSelectedAnnouncement(
-                                                                announcement
-                                                            )
-                                                        }
-                                                        className="group/button inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-md transition duration-300 hover:-translate-y-0.5 hover:bg-red-500 hover:shadow-lg"
-                                                    >
-
-                                                        Read More
-
-                                                        <ArrowRight className="h-3.5 w-3.5 transition group-hover/button:translate-x-1" />
-
-                                                    </button>
-
-                                                </div>
+                                                </button>
 
                                             </div>
 
                                         </div>
 
-                                    </article>
+                                    </div>
 
-                                )
-                            )}
+                                </article>
+
+                            ))}
 
                         </div>
 
-                        {/* NO RESULTS */}
-
+                        {/* No Results */}
                         {filteredAnnouncements.length === 0 && (
 
-                            <div className="mt-8 rounded-3xl border border-green-100 bg-white p-12 text-center shadow-xl shadow-green-950/30">
+                            <div className="mt-8 rounded-3xl border-2 border-dashed border-green-300 bg-green-50 p-12 text-center dark:border-green-600/50 dark:bg-green-900/30">
 
-                                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-green-100">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-800/60">
 
-                                    <Search className="h-9 w-9 text-green-700" />
+                                    <Search className="h-8 w-8 text-green-700 dark:text-green-300" />
 
                                 </div>
 
-                                <h3 className="mt-5 text-xl font-bold text-slate-900">
+                                <h3 className="mt-5 text-xl font-black text-green-950 dark:text-white">
                                     No announcements found
                                 </h3>
 
-                                <p className="mt-2 text-slate-500">
+                                <p className="mt-2 text-sm text-gray-600 dark:text-green-100/70">
                                     Try another keyword or select a different
                                     category.
                                 </p>
@@ -917,266 +860,228 @@ ${announcement.description}`;
 
                     </section>
 
-                    {/* =================================================
-                        INFORMATION SECTION
+                    {/* ==================================================
+                        KEEP GROWING TOGETHER
                     ================================================== */}
 
                     <section>
 
-                        <div className="mb-6">
+                        <div className="text-center">
 
-                            <div className="flex items-center gap-2">
+                            <span className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-300">
+                                Stay Connected
+                            </span>
 
-                                <Info className="h-4 w-4 text-yellow-300" />
-
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                                    Stay Connected
-                                </p>
-
-                            </div>
-
-                            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
+                            <h2 className="mt-2 text-3xl font-black text-green-950 dark:text-white sm:text-4xl">
                                 Keep Growing Together
                             </h2>
 
+                            <p className="mx-auto mt-3 max-w-2xl text-gray-600 dark:text-green-100/70">
+                                Every update helps you stay close to what God
+                                is doing in the youth community.
+                            </p>
+
                         </div>
 
-                        <div className="grid gap-6 md:grid-cols-3">
+                        <div className="mt-8 grid gap-5 md:grid-cols-3">
 
-                            {/* CARD 1 */}
+                            {perks.map((perk) => {
+                                const Icon = perk.icon;
 
-                            <div className="group relative overflow-hidden rounded-3xl border border-green-100 bg-white p-7 text-center shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                return (
+                                    <div
+                                        key={perk.title}
+                                        className={`group relative overflow-hidden rounded-2xl border border-green-100 bg-gradient-to-br dark:border-green-800/50 ${perk.gradient} p-6 shadow-xl shadow-green-900/15 transition duration-300 hover:-translate-y-2 hover:shadow-2xl dark:shadow-black/30`}
+                                    >
 
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 transition group-hover:scale-110">
+                                        <Icon
+                                            className={`pointer-events-none absolute -bottom-6 -right-6 h-32 w-32 transition duration-500 group-hover:-rotate-6 group-hover:scale-110 ${perk.mark}`}
+                                        />
 
-                                    <Bell className="h-6 w-6 text-green-700" />
+                                        <div className="relative">
 
-                                </div>
+                                            <div
+                                                className={`flex h-12 w-12 items-center justify-center rounded-xl ${perk.chip}`}
+                                            >
+                                                <Icon className="h-6 w-6" />
+                                            </div>
 
-                                <h3 className="mt-5 font-black text-slate-900">
-                                    Stay Updated
-                                </h3>
+                                            <h3
+                                                className={`mt-5 text-xl font-black ${perk.text}`}
+                                            >
+                                                {perk.title}
+                                            </h3>
 
-                                <p className="mt-2 text-sm leading-6 text-slate-500">
-                                    Keep track of important activities,
-                                    schedules, and ministry updates.
-                                </p>
+                                            <p
+                                                className={`mt-3 text-sm leading-6 ${perk.desc}`}
+                                            >
+                                                {perk.description}
+                                            </p>
 
-                                <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-green-50 transition group-hover:scale-150" />
+                                        </div>
 
-                            </div>
-
-                            {/* CARD 2 */}
-
-                            <div className="group relative overflow-hidden rounded-3xl border border-yellow-100 bg-white p-7 text-center shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
-
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-100 transition group-hover:scale-110">
-
-                                    <Users className="h-6 w-6 text-yellow-700" />
-
-                                </div>
-
-                                <h3 className="mt-5 font-black text-slate-900">
-                                    Stay Connected
-                                </h3>
-
-                                <p className="mt-2 text-sm leading-6 text-slate-500">
-                                    Stay connected with the youth community
-                                    and participate in upcoming activities.
-                                </p>
-
-                                <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-yellow-50 transition group-hover:scale-150" />
-
-                            </div>
-
-                            {/* CARD 3 */}
-
-                            <div className="group relative overflow-hidden rounded-3xl border border-red-100 bg-white p-7 text-center shadow-xl shadow-green-950/30 transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
-
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 transition group-hover:scale-110">
-
-                                    <Rocket className="h-6 w-6 text-red-600" />
-
-                                </div>
-
-                                <h3 className="mt-5 font-black text-slate-900">
-                                    Get Involved
-                                </h3>
-
-                                <p className="mt-2 text-sm leading-6 text-slate-500">
-                                    Discover opportunities to serve, learn,
-                                    participate, and grow.
-                                </p>
-
-                                <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-red-50 transition group-hover:scale-150" />
-
-                            </div>
+                                    </div>
+                                );
+                            })}
 
                         </div>
 
                     </section>
 
-                    {/* =================================================
+                    {/* ==================================================
                         FINAL CTA
                     ================================================== */}
 
-                    <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-green-950 via-green-900 to-red-950 px-7 py-14 text-center text-white shadow-2xl sm:px-10">
+                    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-green-700 via-green-800 to-green-900 px-8 py-14 text-center text-white shadow-xl shadow-green-900/30">
 
-                        <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-green-400/20 blur-3xl" />
+                        <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-green-300/20 blur-xl" />
 
-                        <div className="absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-red-500/20 blur-3xl" />
+                        <div className="pointer-events-none absolute -bottom-20 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
 
-                        <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-300/10 blur-3xl" />
+                        <img
+                            src="/images/logo.png"
+                            alt=""
+                            aria-hidden="true"
+                            className="pointer-events-none absolute left-1/2 top-1/2 w-72 -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.07]"
+                        />
 
                         <div className="relative">
 
-                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 shadow-xl">
+                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-lg">
 
-                                <Megaphone className="h-8 w-8 text-yellow-300" />
+                                <Megaphone className="h-7 w-7 text-green-800" />
 
                             </div>
 
-                            <h2 className="mt-6 text-2xl font-black sm:text-3xl">
+                            <h2 className="mt-6 text-3xl font-black sm:text-4xl">
                                 Never Miss an Update
                             </h2>
 
-                            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-green-100">
+                            <p className="mx-auto mt-4 max-w-2xl leading-7 text-green-50">
                                 Stay informed, stay connected, and be part of
                                 everything happening in the SoulSync youth
                                 ministry.
                             </p>
 
-                            <div className="mt-7 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-yellow-300">
+                            <a
+                                href="#announcements"
+                                className="group mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-green-800 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                            >
+                                View Announcements
 
-                                <Star className="h-4 w-4" />
-
-                                SoulSync Youth Ministry
-
-                                <Star className="h-4 w-4" />
-
-                            </div>
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </a>
 
                         </div>
 
                     </section>
 
                 </main>
-
             </div>
 
             {/* =========================================================
                 MODAL
-            ========================================================== */}
+            ========================================================= */}
 
             {selectedAnnouncement && (
 
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-green-950/80 p-4 backdrop-blur-md"
-                    onClick={() =>
-                        setSelectedAnnouncement(null)
-                    }
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+                    onClick={() => setSelectedAnnouncement(null)}
                 >
 
                     <div
-                        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-green-100 bg-white shadow-2xl"
-                        onClick={(e) =>
-                            e.stopPropagation()
-                        }
+                        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-green-100 bg-white shadow-2xl dark:border-green-800/50 dark:bg-green-950"
+                        onClick={(e) => e.stopPropagation()}
                     >
 
-                        {/* MODAL HEADER */}
+                        {/* Modal Header */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-green-900 p-8 text-center text-white">
 
-                        <div className="relative overflow-hidden bg-gradient-to-br from-green-700 via-green-800 to-green-950 p-8 text-center text-white">
-
-                            <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-yellow-300/10 blur-3xl" />
-
-                            <div className="absolute -bottom-20 -left-20 h-52 w-52 rounded-full bg-red-500/10 blur-3xl" />
+                            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-white/15 blur-2xl" />
 
                             <button
                                 type="button"
                                 onClick={() =>
                                     setSelectedAnnouncement(null)
                                 }
-                                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-red-600"
+                                className="absolute right-4 top-4 rounded-full bg-white/10 p-2 backdrop-blur transition hover:bg-white/20"
+                                aria-label="Close"
                             >
 
-                                <X className="h-4 w-4" />
+                                <X className="h-5 w-5" />
 
                             </button>
 
                             <div className="relative">
 
-                                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/10 text-5xl shadow-xl">
+                                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl shadow-xl">
 
                                     {selectedAnnouncement.icon}
 
                                 </div>
 
-                                <h2 className="mt-5 text-3xl font-black">
+                                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+
+                                    <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white backdrop-blur">
+                                        {selectedAnnouncement.category}
+                                    </span>
+
+                                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-green-800">
+                                        {selectedAnnouncement.priority}
+                                    </span>
+
+                                </div>
+
+                                <h2 className="mt-4 text-3xl font-black">
                                     {selectedAnnouncement.title}
                                 </h2>
-
-                                <p className="mt-2 text-sm text-green-100">
-                                    {selectedAnnouncement.category}
-                                </p>
 
                             </div>
 
                         </div>
 
-                        {/* MODAL BODY */}
-
+                        {/* Modal Body */}
                         <div className="p-8">
 
-                            <p className="leading-7 text-slate-600">
-                                {selectedAnnouncement.description}
-                            </p>
+                            <div className="flex items-start gap-3">
 
-                            <div className="mt-6 space-y-3 rounded-2xl bg-green-50 p-5 text-sm text-slate-700">
+                                <Info className="mt-1 h-5 w-5 shrink-0 text-green-700 dark:text-green-300" />
 
-                                <div className="flex items-center gap-3">
+                                <p className="leading-7 text-gray-700 dark:text-green-50/85">
+                                    {selectedAnnouncement.description}
+                                </p>
 
-                                    <CalendarDays className="h-5 w-5 text-green-700" />
+                            </div>
 
-                                    <span>
-                                        <strong>Date:</strong>{' '}
-                                        {selectedAnnouncement.date}
-                                    </span>
+                            <div className="mt-6 space-y-4 rounded-2xl border border-green-100 bg-green-50 p-5 text-sm dark:border-green-800/50 dark:bg-green-900/40">
 
-                                </div>
+                                {[
+                                    [CalendarDays, 'Date', selectedAnnouncement.date],
+                                    [Clock3, 'Time', selectedAnnouncement.time],
+                                    [Megaphone, 'Category', selectedAnnouncement.category],
+                                    [Star, 'Priority', selectedAnnouncement.priority],
+                                ].map(([Icon, label, value]) => (
 
-                                <div className="flex items-center gap-3">
+                                    <div key={label} className="flex items-center gap-3">
 
-                                    <Clock3 className="h-5 w-5 text-yellow-600" />
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-700 dark:bg-green-600">
+                                            <Icon className="h-5 w-5 text-white" />
+                                        </div>
 
-                                    <span>
-                                        <strong>Time:</strong>{' '}
-                                        {selectedAnnouncement.time}
-                                    </span>
+                                        <div>
+                                            <p className="text-xs font-bold uppercase tracking-wide text-green-700 dark:text-green-300">
+                                                {label}
+                                            </p>
 
-                                </div>
+                                            <p className="font-semibold text-green-950 dark:text-white">
+                                                {value}
+                                            </p>
+                                        </div>
 
-                                <div className="flex items-center gap-3">
+                                    </div>
 
-                                    <Megaphone className="h-5 w-5 text-green-700" />
-
-                                    <span>
-                                        <strong>Category:</strong>{' '}
-                                        {selectedAnnouncement.category}
-                                    </span>
-
-                                </div>
-
-                                <div className="flex items-center gap-3">
-
-                                    <Star className="h-5 w-5 text-yellow-500" />
-
-                                    <span>
-                                        <strong>Priority:</strong>{' '}
-                                        {selectedAnnouncement.priority}
-                                    </span>
-
-                                </div>
+                                ))}
 
                             </div>
 
@@ -1185,11 +1090,9 @@ ${announcement.description}`;
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        toggleSaved(
-                                            selectedAnnouncement.id
-                                        )
+                                        toggleSaved(selectedAnnouncement.id)
                                     }
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-red-500 hover:shadow-xl"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-bold text-white shadow-lg shadow-green-900/20 transition hover:-translate-y-0.5 hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-500"
                                 >
 
                                     <Bookmark
@@ -1202,9 +1105,7 @@ ${announcement.description}`;
                                         }`}
                                     />
 
-                                    {saved.includes(
-                                        selectedAnnouncement.id
-                                    )
+                                    {saved.includes(selectedAnnouncement.id)
                                         ? 'Saved'
                                         : 'Save'}
 
@@ -1213,11 +1114,9 @@ ${announcement.description}`;
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        shareAnnouncement(
-                                            selectedAnnouncement
-                                        )
+                                        shareAnnouncement(selectedAnnouncement)
                                     }
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-3 font-bold text-slate-700 transition hover:bg-yellow-50 hover:text-green-700"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 px-5 py-3 font-bold text-green-800 transition hover:bg-green-50 dark:border-green-700 dark:text-green-100 dark:hover:bg-green-900/60"
                                 >
 
                                     <Share2 className="h-4 w-4" />
@@ -1233,7 +1132,7 @@ ${announcement.description}`;
                                 onClick={() =>
                                     setSelectedAnnouncement(null)
                                 }
-                                className="mt-3 w-full rounded-xl bg-slate-100 px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-200"
+                                className="mt-3 w-full rounded-xl bg-green-50 px-5 py-3 font-bold text-green-900 transition hover:bg-green-100 dark:bg-green-900/50 dark:text-green-100 dark:hover:bg-green-900/80"
                             >
                                 Close
                             </button>
